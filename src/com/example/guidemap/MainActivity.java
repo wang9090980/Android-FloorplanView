@@ -17,8 +17,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		guideMapView = (GuideMapView) findViewById(R.id.guideMap);
-		guideMapView.setMapBitmap(AssetsUtils.getBitmap(getBaseContext(), "44.png"));
 		List<Booth> booths = new Gson().fromJson(AssetsUtils.getString(getBaseContext(), "booths.txt"), new TypeToken<List<Booth>>(){}.getType()) ;
-		guideMapView.setBooths(booths);
+		guideMapView.setMap(AssetsUtils.getBitmap(getBaseContext(), "44.png"), booths);
 	}
 }
