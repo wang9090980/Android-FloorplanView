@@ -62,7 +62,12 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 
 	@Override
 	public boolean onDown(MotionEvent e) {
-		return simpleGestureListener != null;
+		if(simpleGestureListener != null){
+			simpleGestureListener.onDown(e);
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	@Override
@@ -126,6 +131,7 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 	}
 	
 	public interface SimpleGestureListener{
+		public void onDown(MotionEvent motionEvent);
 		public void onMove(float distanceX, float distanceY);
 		public void onScale(float scaleFactor, float focusX, float focusY);
 		public void onDoubleTab(MotionEvent motionEvent);
