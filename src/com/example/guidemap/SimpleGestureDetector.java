@@ -16,90 +16,46 @@
 
 package com.example.guidemap;
 
-import android.content.Context;
+import me.xiaopan.easy.android.util.AndroidLogger;
+import android.graphics.RectF;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
-import android.view.ScaleGestureDetector.OnScaleGestureListener;
 
-public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapListener, OnScaleGestureListener{
+/**
+ * 综合手势识别器
+ */
+public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapListener{
+	private GuideMapView guideMapView;
+	private ZoomContorller zoomContorller;
 	private GestureDetector generalGestureDetector;
-	private ScaleGestureDetector scaleGestureDetector;
+	private FlingScrollRunnable flingScrollRunnable;
 	private SimpleGestureListener simpleGestureListener;
 	
-	public SimpleGestureDetector(Context context, SimpleGestureListener simpleGestureListener){
-		scaleGestureDetector = new ScaleGestureDetector(context, this);
-		generalGestureDetector = new GestureDetector(context, this);
+	public SimpleGestureDetector(GuideMapView guideMapView, SimpleGestureListener simpleGestureListener){
+		this.guideMapView = guideMapView;
 		this.simpleGestureListener = simpleGestureListener;
+		generalGestureDetector = new GestureDetector(guideMapView.getContext(), this);
+		zoomContorller = new ZoomContorller(guideMapView);
 	}
 	
 	public boolean onTouchEvent(MotionEvent motionEvent){
 		generalGestureDetector.onTouchEvent(motionEvent);
-		return scaleGestureDetector.onTouchEvent(motionEvent);
+		zoomContorller.onTouchEvent(motionEvent);
+		return true;
 	}
 	
 	@Override
-	public boolean onScale(ScaleGestureDetector detector) {
-		if(simpleGestureListener != null){
-			simpleGestureListener.onScale(detector.getScaleFactor(), detector.getFocusX(), detector.getFocusY());
-			return true;
-		}else{
-			return false;
-		}
-	}
-
-	@Override
-	public boolean onScaleBegin(ScaleGestureDetector detector) {
-		return true;
-	}
-
-	@Override
-	public void onScaleEnd(ScaleGestureDetector detector) {
-		
-	}
-
-	@Override
 	public boolean onDown(MotionEvent e) {
+		if(flingScrollRunnable != null){
+			flingScrollRunnable.cancelFling();
+			flingScrollRunnable = null;
+		}
 		if(simpleGestureListener != null){
 			simpleGestureListener.onDown(e);
-			return true;
-		}else{
-			return false;
 		}
-	}
-
-	@Override
-	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-		if(simpleGestureListener != null){
-			simpleGestureListener.onFling(velocityX, velocityY);
-			return true;
-		}else{
-			return false;
-		}
-	}
-
-	@Override
-	public void onLongPress(MotionEvent e) {
-		if(simpleGestureListener != null){
-			simpleGestureListener.onLongPress(e);
-		}
-	}
-
-	@Override
-	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-		if(simpleGestureListener != null){
-			simpleGestureListener.onMove(distanceX, distanceY);
-			return true;
-		}else{
-			return false;
-		}
-	}
-
-	@Override
-	public void onShowPress(MotionEvent e) {
-		
+		return true;
 	}
 
 	@Override
@@ -121,6 +77,38 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 	}
 
 	@Override
+	public void onLongPress(MotionEvent e) {
+		if(simpleGestureListener != null){
+			simpleGestureListener.onLongPress(e);
+		}
+	}
+
+	@Override
+	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+		flingScrollRunnable = new FlingScrollRunnable(guideMapView, this);
+		flingScrollRunnable.fling(guideMapView.getAvailableWidth(), guideMapView.getAvailableHeight(), (int) velocityX, (int) velocityY);
+		guideMapView.post(flingScrollRunnable);
+		return true;
+	}
+
+	@Override
+	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+		if(guideMapView.getDrawable() != null && guideMapView.getDrawMatrix() != null){
+			guideMapView.getDrawMatrix().postTranslate(-distanceX, -distanceY);
+			checkMatrixBounds();
+			guideMapView.invalidate();
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	@Override
+	public void onShowPress(MotionEvent e) {
+		
+	}
+
+	@Override
 	public boolean onDoubleTapEvent(MotionEvent e) {
 		return true;
 	}
@@ -130,13 +118,45 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 		return true;
 	}
 	
+	/**
+	 * 检查矩阵边界，防止滑动时超出边界
+	 */
+    public void checkMatrixBounds(){
+		RectF rect = guideMapView.getDisplayRect();
+		AndroidLogger.d(rect.toString());
+		final float height = rect.height(), width = rect.width();
+		float deltaX = 0, deltaY = 0;
+
+		final int viewHeight = guideMapView.getAvailableHeight();
+		if (height <= viewHeight) {
+			deltaY = (viewHeight - height) / 2 - rect.top;
+		} else if (rect.top > 0) {
+			deltaY = -rect.top;
+		} else if (rect.bottom < viewHeight) {
+			deltaY = viewHeight - rect.bottom;
+		}
+
+		final int viewWidth = guideMapView.getAvailableWidth();
+		if (width <= viewWidth) {
+			deltaX = (viewWidth - width) / 2 - rect.left;
+		} else if (rect.left > 0) {
+			deltaX = -rect.left;
+		} else if (rect.right < viewWidth) {
+			deltaX = viewWidth - rect.right;
+		} else {
+		}
+
+		guideMapView.getDrawMatrix().postTranslate(deltaX, deltaY);
+	}
+	
 	public interface SimpleGestureListener{
 		public void onDown(MotionEvent motionEvent);
-		public void onMove(float distanceX, float distanceY);
-		public void onScale(float scaleFactor, float focusX, float focusY);
 		public void onDoubleTab(MotionEvent motionEvent);
 		public void onLongPress(MotionEvent motionEvent);
 		public void onSingleTapUp(MotionEvent motionEvent);
-		public void onFling(float velocityX, float velocityY);
+	}
+
+	public ZoomContorller getZoomContorller() {
+		return zoomContorller;
 	}
 }
