@@ -22,7 +22,7 @@ import com.example.guidemap.SimpleGestureDetector.SimpleGestureListener;
 
 public class GuideMapView extends View implements SimpleGestureListener{
 	private Matrix drawMatrix;
-	private Drawable mDrawable;
+	private Drawable drawable;
 	private SimpleGestureDetector simpleGestureDetector;	//手势识别器
 	private final RectF mDisplayRect = new RectF();
 	private FlingScrollRunnable flingScrollRunnable;
@@ -61,12 +61,12 @@ public class GuideMapView extends View implements SimpleGestureListener{
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		if(mDrawable != null){
+		if(drawable != null){
 			canvas.save();
 			if(drawMatrix != null){
 				canvas.concat(drawMatrix);
 			}
-			mDrawable.draw(canvas);
+			drawable.draw(canvas);
 			canvas.restore();
 		}
 	}
@@ -83,8 +83,8 @@ public class GuideMapView extends View implements SimpleGestureListener{
 
 	public void setMap(Bitmap mapBitmap, List<Booth> booths) {
 		//释放旧的图片
-		if(mDrawable != null){
-			unscheduleDrawable(mDrawable);
+		if(drawable != null){
+			unscheduleDrawable(drawable);
 		}
 		
 		/* 绘制新的图片 */
@@ -96,8 +96,8 @@ public class GuideMapView extends View implements SimpleGestureListener{
 		for(Booth booth : booths){
 			canvas.drawRect(booth.getLeft(), booth.getTop(), booth.getRight(), booth.getBottom(), rectPaint);
 		}
-		mDrawable = new BitmapDrawable(getResources(), showBitmap);
-		mDrawable.setBounds(0, 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight());
+		drawable = new BitmapDrawable(getResources(), showBitmap);
+		drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
 		if(drawMatrix == null){
 			drawMatrix = new Matrix();
 		}
@@ -157,8 +157,8 @@ public class GuideMapView extends View implements SimpleGestureListener{
      * @return RectF - Displayed Rectangle
      */
     public RectF getDisplayRect(Matrix matrix) {
-        if (null != mDrawable) {
-            mDisplayRect.set(0, 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight());
+        if (null != drawable) {
+            mDisplayRect.set(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
             matrix.mapRect(mDisplayRect);
             return mDisplayRect;
         }else{
@@ -191,7 +191,7 @@ public class GuideMapView extends View implements SimpleGestureListener{
 	
 	@Override
 	public void onMove(float distanceX, float distanceY) {
-		if(mDrawable != null && drawMatrix != null){
+		if(drawable != null && drawMatrix != null){
 			drawMatrix.postTranslate(-distanceX, -distanceY);
 			checkMatrixBounds();
 			invalidate();
@@ -200,7 +200,7 @@ public class GuideMapView extends View implements SimpleGestureListener{
 
 	@Override
 	public void onScale(float scaleFactor, float focusX, float focusY) {
-		if(mDrawable != null && drawMatrix != null){
+		if(drawable != null && drawMatrix != null){
 			scaling *= scaleFactor;
 			AndroidLogger.d("缩放比例："+scaling);
 			drawMatrix.postScale(scaleFactor, scaleFactor, focusX, focusY);
@@ -228,8 +228,8 @@ public class GuideMapView extends View implements SimpleGestureListener{
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		if(mDrawable != null){
-			unscheduleDrawable(mDrawable);
+		if(drawable != null){
+			unscheduleDrawable(drawable);
 		}
 	}
 	
@@ -295,6 +295,12 @@ public class GuideMapView extends View implements SimpleGestureListener{
             }
 		}
 	}
-	
-	private void initScal
+
+	public Matrix getDrawMatrix() {
+		return drawMatrix;
+	}
+
+	public Drawable getDrawable() {
+		return drawable;
+	}
 }
