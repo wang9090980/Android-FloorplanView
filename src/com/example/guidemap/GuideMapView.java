@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.example.guidemap.SimpleGestureDetector.SimpleGestureListener;
+import com.example.guidemap.domain.Booth;
 
 /**
  * 导览图

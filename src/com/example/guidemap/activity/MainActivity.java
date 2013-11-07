@@ -1,4 +1,4 @@
-package com.example.guidemap;
+package com.example.guidemap.activity;
 
 import java.util.List;
 
@@ -6,6 +6,9 @@ import me.xiaopan.easy.android.util.AssetsUtils;
 import android.app.Activity;
 import android.os.Bundle;
 
+import com.example.guidemap.GuideMapView;
+import com.example.guidemap.R;
+import com.example.guidemap.domain.Booth;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 

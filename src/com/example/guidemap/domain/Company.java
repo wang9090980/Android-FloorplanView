@@ -1,4 +1,4 @@
-package com.example.guidemap;
+package com.example.guidemap.domain;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
