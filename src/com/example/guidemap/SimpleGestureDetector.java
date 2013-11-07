@@ -27,6 +27,8 @@ import android.view.MotionEvent;
  * 综合手势识别器
  */
 public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapListener{
+	public static final int ZOOM_DURATION = 200;
+	public static final int SIXTY_FPS_INTERVAL = 1000 / 60;
 	private GuideMapView guideMapView;
 	private ZoomContorller zoomContorller;
 	private GestureDetector generalGestureDetector;
@@ -37,12 +39,17 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 		this.guideMapView = guideMapView;
 		this.simpleGestureListener = simpleGestureListener;
 		generalGestureDetector = new GestureDetector(guideMapView.getContext(), this);
-		zoomContorller = new ZoomContorller(guideMapView);
+		zoomContorller = new ZoomContorller(this);
 	}
 	
 	public boolean onTouchEvent(MotionEvent motionEvent){
 		generalGestureDetector.onTouchEvent(motionEvent);
 		zoomContorller.onTouchEvent(motionEvent);
+		if(motionEvent.getAction() == MotionEvent.ACTION_CANCEL || motionEvent.getAction() == MotionEvent.ACTION_OUTSIDE || motionEvent.getAction() == MotionEvent.ACTION_UP){
+			if(zoomContorller.getCurrentScale() < zoomContorller.getToggleScales()[0]){
+				zoomContorller.setScale(zoomContorller.getToggleScales()[0], motionEvent.getX(), motionEvent.getY(), true);
+			}
+		}
 		return true;
 	}
 	
@@ -70,6 +77,7 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 
 	@Override
 	public boolean onDoubleTap(MotionEvent e) {
+		zoomContorller.doubleTap(e);
 		if(simpleGestureListener != null){
 			simpleGestureListener.onDoubleTab(e);
 		}
@@ -85,7 +93,7 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-		flingScrollRunnable = new FlingScrollRunnable(guideMapView, this);
+		flingScrollRunnable = new FlingScrollRunnable(this);
 		flingScrollRunnable.fling(guideMapView.getAvailableWidth(), guideMapView.getAvailableHeight(), (int) velocityX, (int) velocityY);
 		guideMapView.post(flingScrollRunnable);
 		return true;
@@ -158,5 +166,13 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 
 	public ZoomContorller getZoomContorller() {
 		return zoomContorller;
+	}
+
+	public GuideMapView getGuideMapView() {
+		return guideMapView;
+	}
+
+	public void setGuideMapView(GuideMapView guideMapView) {
+		this.guideMapView = guideMapView;
 	}
 }

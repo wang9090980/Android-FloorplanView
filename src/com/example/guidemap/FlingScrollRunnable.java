@@ -26,13 +26,11 @@ import android.widget.Scroller;
 public class FlingScrollRunnable implements Runnable {
 	private Scroller mScroller;
 	private int mCurrentX, mCurrentY;
-	private GuideMapView guideMapView;
 	private SimpleGestureDetector simpleGestureDetector;
 	
-	public FlingScrollRunnable(GuideMapView guideMapView, SimpleGestureDetector simpleGestureDetector){
-		this.guideMapView = guideMapView;
+	public FlingScrollRunnable(SimpleGestureDetector simpleGestureDetector){
 		this.simpleGestureDetector = simpleGestureDetector;
-		mScroller = new Scroller(guideMapView.getContext(), new AccelerateDecelerateInterpolator());
+		mScroller = new Scroller(simpleGestureDetector.getGuideMapView().getContext(), new AccelerateDecelerateInterpolator());
 	}
 	
 	public void cancelFling(){
@@ -40,7 +38,7 @@ public class FlingScrollRunnable implements Runnable {
 	}
 	
 	public void fling(int viewWidth, int viewHeight, int velocityX, int velocityY){
-		final RectF rect = guideMapView.getDisplayRect();
+		final RectF rect = simpleGestureDetector.getGuideMapView().getDisplayRect();
         if (null == rect) {
             return;
         }
@@ -80,12 +78,12 @@ public class FlingScrollRunnable implements Runnable {
         if (mScroller.computeScrollOffset()) {
             final int newX = mScroller.getCurrX();
             final int newY = mScroller.getCurrY();
-            guideMapView.getDrawMatrix().postTranslate(-(mCurrentX - newX), -(mCurrentY - newY));
+            simpleGestureDetector.getGuideMapView().getDrawMatrix().postTranslate(-(mCurrentX - newX), -(mCurrentY - newY));
             simpleGestureDetector.checkMatrixBounds();
-            guideMapView.invalidate();
+            simpleGestureDetector.getGuideMapView().invalidate();
             mCurrentX = newX;
             mCurrentY = newY;
-            guideMapView.postDelayed(this, 1000 / 60);
+            simpleGestureDetector.getGuideMapView().postDelayed(this, SimpleGestureDetector.SIXTY_FPS_INTERVAL);
         }
 	}
 }
