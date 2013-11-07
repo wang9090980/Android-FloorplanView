@@ -26,7 +26,8 @@ public class GuideMapView extends View implements SimpleGestureListener{
 	private Matrix drawMatrix;
 	private Drawable drawable;
 	private SimpleGestureDetector simpleGestureDetector;	//手势识别器
-	private final RectF mDisplayRect = new RectF();
+	private RectF displayRect;
+	private InitialZoomMode initialZoomMode;
 
 	public GuideMapView(Context context) {
 		super(context);
@@ -44,6 +45,8 @@ public class GuideMapView extends View implements SimpleGestureListener{
 	}
 	
 	private void init(){
+		displayRect = new RectF();
+		initialZoomMode = InitialZoomMode.DEFAULT;
 		simpleGestureDetector = new SimpleGestureDetector(this, this);
 	}
 	
@@ -126,9 +129,9 @@ public class GuideMapView extends View implements SimpleGestureListener{
      */
     public final RectF getDisplayRect() {
     	if (drawable != null) {
-			mDisplayRect.set(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-			drawMatrix.mapRect(mDisplayRect);
-			return mDisplayRect;
+			displayRect.set(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+			drawMatrix.mapRect(displayRect);
+			return displayRect;
 		} else {
 			return null;
 		}
@@ -173,5 +176,17 @@ public class GuideMapView extends View implements SimpleGestureListener{
 
 	public Drawable getDrawable() {
 		return drawable;
+	}
+	
+	public InitialZoomMode getInitialZoomMode() {
+		return initialZoomMode;
+	}
+
+	public void setInitialZoomMode(InitialZoomMode initialZoomMode) {
+		this.initialZoomMode = initialZoomMode;
+	}
+
+	public enum InitialZoomMode{
+		MIN, DEFAULT, MAX;
 	}
 }

@@ -1,5 +1,7 @@
 package com.example.guidemap;
 
+import com.example.guidemap.GuideMapView.InitialZoomMode;
+
 import me.xiaopan.easy.android.util.AndroidLogger;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -11,8 +13,8 @@ public class ZoomContorller implements ScaleGestureDetector.OnScaleGestureListen
 	private float currentScale = 1.0f;
 	private float[] toggleScales;
 	private ScaleGestureDetector scaleGestureDetector;
-//	private int index;
 	private SimpleGestureDetector simpleGestureDetector;
+	private boolean first = true;
 	
 	public ZoomContorller(SimpleGestureDetector simpleGestureDetector){
 		this.simpleGestureDetector = simpleGestureDetector;
@@ -90,6 +92,16 @@ public class ZoomContorller implements ScaleGestureDetector.OnScaleGestureListen
 			toggleScales[0] = 1.0f;
 			toggleScales[1] = 2.0f;
 			toggleScales[2] = 3.0f;
+		}
+		if(first){
+			if(simpleGestureDetector.getGuideMapView().getInitialZoomMode() == InitialZoomMode.MIN){
+				setScale(toggleScales[0], 0, 0, false);
+			}else if(simpleGestureDetector.getGuideMapView().getInitialZoomMode() == InitialZoomMode.DEFAULT){
+				setScale(1.0f, 0, 0, false);
+			}else if(simpleGestureDetector.getGuideMapView().getInitialZoomMode() == InitialZoomMode.MAX){
+				setScale(toggleScales[toggleScales.length - 1], 0, 0, false);
+			}
+			first = false;
 		}
 	}
 	

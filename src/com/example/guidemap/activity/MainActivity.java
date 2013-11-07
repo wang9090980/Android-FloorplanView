@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.example.guidemap.GuideMapView;
+import com.example.guidemap.GuideMapView.InitialZoomMode;
 import com.example.guidemap.R;
 import com.example.guidemap.domain.Booth;
 import com.google.gson.Gson;
@@ -22,5 +23,6 @@ public class MainActivity extends Activity {
 		guideMapView = (GuideMapView) findViewById(R.id.guideMap);
 		List<Booth> booths = new Gson().fromJson(AssetsUtils.getString(getBaseContext(), "booths.txt"), new TypeToken<List<Booth>>(){}.getType()) ;
 		guideMapView.setMap(AssetsUtils.getBitmap(getBaseContext(), "44.png"), booths);
+		guideMapView.setInitialZoomMode(InitialZoomMode.MIN);
 	}
 }
