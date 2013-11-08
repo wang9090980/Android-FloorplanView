@@ -75,6 +75,9 @@ public class ZoomContorller implements ScaleGestureDetector.OnScaleGestureListen
 		}
 	}
 	
+	/**
+	 * 初始化
+	 */
 	public void init(){
 		if(simpleGestureDetector.getGuideMapView().getDrawable() != null && simpleGestureDetector.getGuideMapView().getWidth() > 0 && simpleGestureDetector.getGuideMapView().getHeight() > 0){
 			AndroidLogger.d("GuideMapView宽高："+simpleGestureDetector.getGuideMapView().getWidth()+","+simpleGestureDetector.getGuideMapView().getHeight()+"；Drawable宽高："+simpleGestureDetector.getGuideMapView().getDrawable().getIntrinsicWidth()+","+simpleGestureDetector.getGuideMapView().getDrawable().getIntrinsicHeight());

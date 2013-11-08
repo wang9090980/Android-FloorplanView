@@ -28,22 +28,11 @@ public abstract class RectArea implements Area{
 	 */
 	public abstract int getBottom();
 	
-	/**
-	 * 是否是自己
-	 * @param x
-	 * @param y
-	 * @return
-	 */
 	@Override
 	public boolean isClickMe(float x, float y){
 		return x >= getLeft() && x <= getRight() && y >= getTop() && y <= getBottom();
 	}
 	
-	/**
-	 * 绘制
-	 * @param canvas
-	 * @param paint
-	 */
 	@Override
 	public void draw(Canvas canvas, Paint paint){
 		canvas.drawRect(getLeft(), getTop(), getRight(), getBottom(), paint);
