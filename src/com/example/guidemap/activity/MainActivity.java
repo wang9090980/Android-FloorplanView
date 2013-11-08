@@ -3,11 +3,14 @@ package com.example.guidemap.activity;
 import java.util.List;
 
 import me.xiaopan.easy.android.util.AssetsUtils;
+import me.xiaopan.easy.android.util.ToastUtils;
 import android.app.Activity;
 import android.os.Bundle;
 
+import com.example.guidemap.Area;
 import com.example.guidemap.GuideMapView;
 import com.example.guidemap.GuideMapView.InitialZoomMode;
+import com.example.guidemap.GuideMapView.Listener;
 import com.example.guidemap.R;
 import com.example.guidemap.domain.Booth;
 import com.google.gson.Gson;
@@ -21,8 +24,16 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		guideMapView = (GuideMapView) findViewById(R.id.guideMap);
-		List<Booth> booths = new Gson().fromJson(AssetsUtils.getString(getBaseContext(), "booths.txt"), new TypeToken<List<Booth>>(){}.getType()) ;
+		List<Area> booths = new Gson().fromJson(AssetsUtils.getString(getBaseContext(), "booths.txt"), new TypeToken<List<Booth>>(){}.getType()) ;
 		guideMapView.setMap(AssetsUtils.getBitmap(getBaseContext(), "44.png"), booths);
 		guideMapView.setInitialZoomMode(InitialZoomMode.MIN);
+		guideMapView.setListener(new Listener() {
+			@Override
+			public void onClickArea(Area area) {
+				if(area != null && area instanceof Booth){
+					ToastUtils.toastS(getBaseContext(), ((Booth) area).getCompany().getAtrName());
+				}
+			}
+		});
 	}
 }

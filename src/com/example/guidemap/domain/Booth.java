@@ -1,5 +1,6 @@
 package com.example.guidemap.domain;
 
+import com.example.guidemap.RectArea;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -7,7 +8,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * 展位
  */
-public class Booth{
+public class Booth extends RectArea{
 	@Expose
 	@SerializedName("bthId")
 	private String id;	//ID
@@ -72,6 +73,7 @@ public class Booth{
 	 * 获取左外边距
 	 * @return 左外边距
 	 */ 
+	@Override
 	public int getLeft() {
 		return left;
 	}
@@ -88,6 +90,7 @@ public class Booth{
 	 * 获取左外边距
 	 * @return 顶外边距
 	 */
+	@Override
 	public int getTop() {
 		return top;
 	}
@@ -104,6 +107,7 @@ public class Booth{
 	 * 获取右外边距
 	 * @return 右外边距
 	 */
+	@Override
 	public int getRight() {
 		return left + width;
 	}
@@ -112,6 +116,7 @@ public class Booth{
 	 * 获取底外边距
 	 * @return 底外边距
 	 */
+	@Override
 	public int getBottom() {
 		return top + height;
 	}
@@ -162,15 +167,5 @@ public class Booth{
 	 */
 	public void setCompany(Company company) {
 		this.company = company;
-	}
-	
-	/**
-	 * 是否是自己
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	public boolean isMe(float x, float y){
-		return x >= left && x <= getRight() && y >= top && y <= getBottom();
 	}
 }
