@@ -3,6 +3,7 @@ package com.example.guidemap;
 import java.util.List;
 
 import me.xiaopan.easy.android.util.Colors;
+import me.xiaopan.easy.android.util.ToastUtils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -28,6 +29,7 @@ public class GuideMapView extends View implements SimpleGestureListener{
 	private SimpleGestureDetector simpleGestureDetector;	//手势识别器
 	private RectF displayRect;
 	private InitialZoomMode initialZoomMode;
+	private List<Booth> booths;
 
 	public GuideMapView(Context context) {
 		super(context);
@@ -83,28 +85,31 @@ public class GuideMapView extends View implements SimpleGestureListener{
 		return result;
 	}
 
-	public void setMap(Bitmap mapBitmap, List<Booth> booths) {
-		//释放旧的图片
-		if(drawable != null){
-			unscheduleDrawable(drawable);
+	public void setMap(Bitmap mapBitmap, List<Booth> newBooths) {
+		if(mapBitmap != null && newBooths != null && newBooths.size() > 0){
+			this.booths = newBooths;
+			//释放旧的图片
+			if(drawable != null){
+				unscheduleDrawable(drawable);
+			}
+			
+			/* 绘制新的图片 */
+			Bitmap showBitmap = mapBitmap.copy(Config.ARGB_8888, true);
+			mapBitmap.recycle();
+			Canvas canvas = new Canvas(showBitmap);
+			Paint rectPaint = new Paint();
+			rectPaint.setColor(Colors.BLUE_TRANSLUCENT);
+			for(Booth booth : booths){
+				canvas.drawRect(booth.getLeft(), booth.getTop(), booth.getRight(), booth.getBottom(), rectPaint);
+			}
+			drawable = new BitmapDrawable(getResources(), showBitmap);
+			drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+			if(drawMatrix == null){
+				drawMatrix = new Matrix();
+			}
+			simpleGestureDetector.getZoomContorller().init();
+			invalidate();
 		}
-		
-		/* 绘制新的图片 */
-		Bitmap showBitmap = mapBitmap.copy(Config.ARGB_8888, true);
-		mapBitmap.recycle();
-		Canvas canvas = new Canvas(showBitmap);
-		Paint rectPaint = new Paint();
-		rectPaint.setColor(Colors.BLUE_TRANSLUCENT);
-		for(Booth booth : booths){
-			canvas.drawRect(booth.getLeft(), booth.getTop(), booth.getRight(), booth.getBottom(), rectPaint);
-		}
-		drawable = new BitmapDrawable(getResources(), showBitmap);
-		drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-		if(drawMatrix == null){
-			drawMatrix = new Matrix();
-		}
-		simpleGestureDetector.getZoomContorller().init();
-		invalidate();
 	}
 	
     /**
@@ -144,12 +149,19 @@ public class GuideMapView extends View implements SimpleGestureListener{
 
 	@Override
 	public void onSingleTapUp(MotionEvent e) {
-//		Booth booth = findBooth(e.getX()+left, e.getY()+top);
-//		if(booth != null){
-//			ToastUtils.toastS(getContext(), booth.getCompany().getAtrName());
-//		}else{
-//			ToastUtils.toastS(getContext(), "没有公司");
-//		}
+		if(drawable != null){
+			RectF rectF = getDisplayRect();
+			if(rectF != null){
+				Booth booth = findBooth((e.getX()-rectF.left)/simpleGestureDetector.getZoomContorller().getCurrentScale(), (e.getY()-rectF.top)/simpleGestureDetector.getZoomContorller().getCurrentScale());
+				if(booth != null){
+					ToastUtils.toastS(getContext(), booth.getCompany().getAtrName());
+				}else{
+					ToastUtils.toastS(getContext(), "没有展位");
+				}
+			}
+		}else{
+			
+		}
 	}
 	
 	@Override
@@ -168,6 +180,23 @@ public class GuideMapView extends View implements SimpleGestureListener{
 		if(drawable != null){
 			unscheduleDrawable(drawable);
 		}
+	}
+	
+	/**
+	 * 寻找展位
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	private Booth findBooth(float x, float y){
+		if(booths != null && booths.size() > 0){
+			for(Booth booth : booths){
+				if(booth.isMe(x, y)){
+					return booth;
+				}
+			}
+		}
+		return null;
 	}
 	
 	public Matrix getDrawMatrix() {

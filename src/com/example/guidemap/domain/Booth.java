@@ -163,4 +163,14 @@ public class Booth{
 	public void setCompany(Company company) {
 		this.company = company;
 	}
+	
+	/**
+	 * 是否是自己
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public boolean isMe(float x, float y){
+		return x >= left && x <= getRight() && y >= top && y <= getBottom();
+	}
 }
