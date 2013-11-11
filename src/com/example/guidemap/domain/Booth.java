@@ -35,6 +35,16 @@ public class Booth extends RectArea{
 	@Expose
 	@SerializedName("atr")
 	private Company company;	//所关联的企业的信息
+
+	@Override
+	public String getTitle() {
+		return company != null?company.getAtrName():null;
+	}
+
+	@Override
+	public String getSubTitle() {
+		return number;
+	}
 	
 	/**
 	 * 获取ID

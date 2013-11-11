@@ -1,13 +1,13 @@
 package com.example.guidemap;
 
 import me.xiaopan.easy.android.util.Colors;
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 
 public abstract class PathArea implements Area{
-
 	/**
 	 * 获取所有坐标点
 	 * @return
@@ -54,7 +54,7 @@ public abstract class PathArea implements Area{
 	}
 
 	@Override
-	public PointF getCenterPoint() {
+	public PointF getBubbleDrawableShowPoint(Context context) {
 		return null;
 	}
 }

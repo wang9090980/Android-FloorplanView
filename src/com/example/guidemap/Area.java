@@ -1,9 +1,14 @@
 package com.example.guidemap;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.drawable.Drawable;
 
+/**
+ * 地图上的区域
+ */
 public interface Area {
 	/**
 	 * 是否点击了我
@@ -21,8 +26,16 @@ public interface Area {
 	public void draw(Canvas canvas, Paint paint);
 	
 	/**
-	 * 获取中心点
+	 * 获取气泡图片
+	 * @param context
 	 * @return
 	 */
-	public PointF getCenterPoint();
+	public Drawable getBubbleDrawable(Context context);
+	
+	/**
+	 * 获取气泡图片显示位置
+	 * @param context
+	 * @return
+	 */
+	public PointF getBubbleDrawableShowPoint(Context context);
 }

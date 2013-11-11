@@ -1,17 +1,15 @@
 package com.example.guidemap;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import me.xiaopan.easy.android.util.Colors;
-import me.xiaopan.easy.android.util.TextUtils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.PointF;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -20,22 +18,19 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.example.guidemap.SimpleGestureDetector.SimpleGestureListener;
-import com.example.guidemap.domain.Booth;
 
 /**
  * 导览图
  */
 public class GuideMapView extends View implements SimpleGestureListener{
-	private Matrix drawMatrix;
-	private Drawable drawable;
-	private SimpleGestureDetector simpleGestureDetector;	//手势识别器
 	private RectF displayRect;
-	private InitialZoomMode initialZoomMode;
-	private List<Area> areas;
+	private Matrix drawMatrix;
 	private Listener listener;
-	private boolean showBubble;
-	private Area area;
-	private Drawable bubbleDrawable;
+	private Drawable drawable;
+	private List<Area> areas;
+	private List<Area> bubbleAreas;
+	private InitialZoomMode initialZoomMode;
+	private SimpleGestureDetector simpleGestureDetector;	//手势识别器
 
 	public GuideMapView(Context context) {
 		super(context);
@@ -76,20 +71,15 @@ public class GuideMapView extends View implements SimpleGestureListener{
 				canvas.concat(drawMatrix);
 			}
 			drawable.draw(canvas);
-			if(bubbleDrawable != null && showBubble){
-				canvas.save();
-				PointF centerPoint = area.getCenterPoint();
-				pointHandle(centerPoint);
-				canvas.translate(centerPoint.x, centerPoint.y);
-				bubbleDrawable.draw(canvas);
-				canvas.restore();
+			if(bubbleAreas != null && bubbleAreas.size() > 0){
+				for(Area area : bubbleAreas){
+					canvas.save();
+					canvas.translate(area.getBubbleDrawableShowPoint(getContext()).x, area.getBubbleDrawableShowPoint(getContext()).y);
+					area.getBubbleDrawable(getContext()).draw(canvas);
+					canvas.restore();
+				}
 			}
 		}
-	}
-	
-	private void pointHandle(PointF pointF){
-		pointF.x -= 40;
-		pointF.y -= bubbleDrawable.getIntrinsicHeight();
 	}
 	
 	@Override
@@ -203,35 +193,16 @@ public class GuideMapView extends View implements SimpleGestureListener{
 		}
 	}
 	
-	public void showBubble(Area area){
-		if(area instanceof Booth){
-			Booth booth = (Booth) area;
-			this.area = area;
-			showBubble = true;
-			
-			Paint paint = new Paint();
-			paint.setTextSize(20);
-			paint.setColor(Colors.BLACK);
-			String text = booth.getCompany().getAtrName();
-			int needWidth = (int) TextUtils.getTextWidth(paint, text);
-			
-			Drawable backgDrawable = getResources().getDrawable(R.drawable.bubble);
-			Rect paddingRect = new Rect();
-			backgDrawable.getPadding(paddingRect);
-			if(backgDrawable.getMinimumWidth() > needWidth + paddingRect.left + paddingRect.right){
-				backgDrawable.setBounds(0, 0, backgDrawable.getMinimumWidth(), backgDrawable.getMinimumHeight());
-			}else{
-				backgDrawable.setBounds(0, 0, (int) (needWidth + paddingRect.left + paddingRect.right), backgDrawable.getMinimumHeight());
+	/**
+	 * 显示一个气泡
+	 * @param newArea
+	 */
+	public void showBubble(Area newArea){
+		if(newArea != null){
+			if(bubbleAreas == null){
+				bubbleAreas = new ArrayList<Area>();
 			}
-			
-			Bitmap bitmap = Bitmap.createBitmap(backgDrawable.getBounds().width(), backgDrawable.getBounds().height(), Config.ARGB_8888);
-			Canvas canvas = new Canvas(bitmap);
-			backgDrawable.draw(canvas);
-			
-			canvas.drawText(booth.getCompany().getAtrName(), paddingRect.left, paddingRect.top + TextUtils.getTextLeading(paint), paint);
-			
-			bubbleDrawable = new BitmapDrawable(bitmap);
-			bubbleDrawable.setBounds(0, 0, bubbleDrawable.getIntrinsicWidth(), bubbleDrawable.getMinimumHeight());
+			bubbleAreas.add(newArea);
 			invalidate();
 		}
 	}
@@ -244,6 +215,10 @@ public class GuideMapView extends View implements SimpleGestureListener{
 		return drawable;
 	}
 	
+	public void setListener(Listener listener) {
+		this.listener = listener;
+	}
+	
 	public InitialZoomMode getInitialZoomMode() {
 		return initialZoomMode;
 	}
@@ -252,14 +227,10 @@ public class GuideMapView extends View implements SimpleGestureListener{
 		this.initialZoomMode = initialZoomMode;
 	}
 
-	public void setListener(Listener listener) {
-		this.listener = listener;
-	}
-
 	public enum InitialZoomMode{
 		MIN, DEFAULT, MAX;
 	}
-	
+
 	public interface Listener{
 		public void onClickArea(Area area);
 	}
