@@ -3,12 +3,15 @@ package com.example.guidemap;
 import java.util.List;
 
 import me.xiaopan.easy.android.util.Colors;
+import me.xiaopan.easy.android.util.TextUtils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -17,6 +20,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.example.guidemap.SimpleGestureDetector.SimpleGestureListener;
+import com.example.guidemap.domain.Booth;
 
 /**
  * 导览图
@@ -29,6 +33,9 @@ public class GuideMapView extends View implements SimpleGestureListener{
 	private InitialZoomMode initialZoomMode;
 	private List<Area> areas;
 	private Listener listener;
+	private boolean showBubble;
+	private Area area;
+	private Drawable bubbleDrawable;
 
 	public GuideMapView(Context context) {
 		super(context);
@@ -65,13 +72,24 @@ public class GuideMapView extends View implements SimpleGestureListener{
 	@Override
 	protected void onDraw(Canvas canvas) {
 		if(drawable != null){
-			canvas.save();
 			if(drawMatrix != null){
 				canvas.concat(drawMatrix);
 			}
 			drawable.draw(canvas);
-			canvas.restore();
+			if(bubbleDrawable != null && showBubble){
+				canvas.save();
+				PointF centerPoint = area.getCenterPoint();
+				pointHandle(centerPoint);
+				canvas.translate(centerPoint.x, centerPoint.y);
+				bubbleDrawable.draw(canvas);
+				canvas.restore();
+			}
 		}
+	}
+	
+	private void pointHandle(PointF pointF){
+		pointF.x -= 40;
+		pointF.y -= bubbleDrawable.getIntrinsicHeight();
 	}
 	
 	@Override
@@ -182,6 +200,39 @@ public class GuideMapView extends View implements SimpleGestureListener{
 		super.onDetachedFromWindow();
 		if(drawable != null){
 			unscheduleDrawable(drawable);
+		}
+	}
+	
+	public void showBubble(Area area){
+		if(area instanceof Booth){
+			Booth booth = (Booth) area;
+			this.area = area;
+			showBubble = true;
+			
+			Paint paint = new Paint();
+			paint.setTextSize(20);
+			paint.setColor(Colors.BLACK);
+			String text = booth.getCompany().getAtrName();
+			int needWidth = (int) TextUtils.getTextWidth(paint, text);
+			
+			Drawable backgDrawable = getResources().getDrawable(R.drawable.bubble);
+			Rect paddingRect = new Rect();
+			backgDrawable.getPadding(paddingRect);
+			if(backgDrawable.getMinimumWidth() > needWidth + paddingRect.left + paddingRect.right){
+				backgDrawable.setBounds(0, 0, backgDrawable.getMinimumWidth(), backgDrawable.getMinimumHeight());
+			}else{
+				backgDrawable.setBounds(0, 0, (int) (needWidth + paddingRect.left + paddingRect.right), backgDrawable.getMinimumHeight());
+			}
+			
+			Bitmap bitmap = Bitmap.createBitmap(backgDrawable.getBounds().width(), backgDrawable.getBounds().height(), Config.ARGB_8888);
+			Canvas canvas = new Canvas(bitmap);
+			backgDrawable.draw(canvas);
+			
+			canvas.drawText(booth.getCompany().getAtrName(), paddingRect.left, paddingRect.top + TextUtils.getTextLeading(paint), paint);
+			
+			bubbleDrawable = new BitmapDrawable(bitmap);
+			bubbleDrawable.setBounds(0, 0, bubbleDrawable.getIntrinsicWidth(), bubbleDrawable.getMinimumHeight());
+			invalidate();
 		}
 	}
 	

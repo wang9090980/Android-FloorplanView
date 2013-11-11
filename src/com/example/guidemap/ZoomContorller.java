@@ -1,6 +1,5 @@
 package com.example.guidemap;
 
-import me.xiaopan.easy.android.util.AndroidLogger;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
@@ -54,7 +53,6 @@ public class ZoomContorller implements ScaleGestureDetector.OnScaleGestureListen
 		simpleGestureDetector.getGuideMapView().getDrawMatrix().postScale(newScaleFactor, newScaleFactor, focusX, focusY);
 		simpleGestureDetector.checkMatrixBounds();
 		simpleGestureDetector.getGuideMapView().invalidate();
-		AndroidLogger.d("缩放比例："+currentScale);
 	}
 	
 	/**
@@ -80,7 +78,6 @@ public class ZoomContorller implements ScaleGestureDetector.OnScaleGestureListen
 	 */
 	public void init(){
 		if(simpleGestureDetector.getGuideMapView().getDrawable() != null && simpleGestureDetector.getGuideMapView().getWidth() > 0 && simpleGestureDetector.getGuideMapView().getHeight() > 0){
-			AndroidLogger.d("GuideMapView宽高："+simpleGestureDetector.getGuideMapView().getWidth()+","+simpleGestureDetector.getGuideMapView().getHeight()+"；Drawable宽高："+simpleGestureDetector.getGuideMapView().getDrawable().getIntrinsicWidth()+","+simpleGestureDetector.getGuideMapView().getDrawable().getIntrinsicHeight());
 			float widthScale = (float) simpleGestureDetector.getGuideMapView().getWidth()/(float) simpleGestureDetector.getGuideMapView().getDrawable().getIntrinsicWidth();
 			float heightScale = (float) simpleGestureDetector.getGuideMapView().getHeight()/(float) simpleGestureDetector.getGuideMapView().getDrawable().getIntrinsicHeight();
 			toggleScales[0] = widthScale < heightScale?(widthScale<1.0f?widthScale:1.0f):(heightScale<1.0f?heightScale:1.0f);

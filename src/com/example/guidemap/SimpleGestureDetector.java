@@ -16,7 +16,6 @@
 
 package com.example.guidemap;
 
-import me.xiaopan.easy.android.util.AndroidLogger;
 import android.graphics.RectF;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnDoubleTapListener;
@@ -131,7 +130,6 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 	 */
     public void checkMatrixBounds(){
 		RectF rect = guideMapView.getDisplayRect();
-		AndroidLogger.d(rect.toString());
 		final float height = rect.height(), width = rect.width();
 		float deltaX = 0, deltaY = 0;
 

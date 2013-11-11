@@ -52,4 +52,9 @@ public abstract class PathArea implements Area{
 			canvas.drawPath(path, paint);
 		}
 	}
+
+	@Override
+	public PointF getCenterPoint() {
+		return null;
+	}
 }

@@ -2,6 +2,7 @@ package com.example.guidemap;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PointF;
 
 public interface Area {
 	/**
@@ -18,4 +19,10 @@ public interface Area {
 	 * @param paint
 	 */
 	public void draw(Canvas canvas, Paint paint);
+	
+	/**
+	 * 获取中心点
+	 * @return
+	 */
+	public PointF getCenterPoint();
 }
