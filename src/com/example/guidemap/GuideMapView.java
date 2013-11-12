@@ -236,6 +236,10 @@ public class GuideMapView extends View implements SimpleGestureListener{
 		}
 	}
 	
+	public void location(Area area){
+		
+	}
+	
 	public Matrix getDrawMatrix() {
 		return drawMatrix;
 	}

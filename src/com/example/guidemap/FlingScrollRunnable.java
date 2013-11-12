@@ -78,9 +78,7 @@ public class FlingScrollRunnable implements Runnable {
         if (mScroller.computeScrollOffset()) {
             final int newX = mScroller.getCurrX();
             final int newY = mScroller.getCurrY();
-            simpleGestureDetector.getGuideMapView().getDrawMatrix().postTranslate(-(mCurrentX - newX), -(mCurrentY - newY));
-            simpleGestureDetector.checkMatrixBounds();
-            simpleGestureDetector.getGuideMapView().invalidate();
+            simpleGestureDetector.postTranslate(-(mCurrentX - newX), -(mCurrentY - newY));
             mCurrentX = newX;
             mCurrentY = newY;
             simpleGestureDetector.getGuideMapView().postDelayed(this, SimpleGestureDetector.SIXTY_FPS_INTERVAL);
