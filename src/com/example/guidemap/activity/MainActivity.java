@@ -35,7 +35,7 @@ public class MainActivity extends Activity {
 		guideMapView.setListener(new Listener() {
 			@Override
 			public void onClickArea(Area area) {
-				guideMapView.showBubble(area);
+				guideMapView.showSingleBubble(area);
 			}
 		});
 	}

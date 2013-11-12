@@ -207,6 +207,22 @@ public class GuideMapView extends View implements SimpleGestureListener{
 		}
 	}
 	
+	/**
+	 * 显示一个气泡，会把之前所有的气泡全部清除
+	 * @param newArea
+	 */
+	public void showSingleBubble(Area newArea){
+		if(newArea != null){
+			if(bubbleAreas == null){
+				bubbleAreas = new ArrayList<Area>(1);
+			}else{
+				bubbleAreas.clear();
+			}
+			bubbleAreas.add(newArea);
+			invalidate();
+		}
+	}
+	
 	public Matrix getDrawMatrix() {
 		return drawMatrix;
 	}

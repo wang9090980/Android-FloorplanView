@@ -2,6 +2,7 @@ package com.example.guidemap;
 
 import me.xiaopan.easy.android.util.Colors;
 import me.xiaopan.easy.android.util.TextUtils;
+import me.xiaopan.easy.java.util.StringUtils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -85,14 +86,16 @@ public abstract class RectArea implements Area{
 			Paint titlePaint = new Paint();
 			titlePaint.setTextSize(40);
 			titlePaint.setColor(Colors.BLACK);
-			int titleNeedWidth = (int) TextUtils.getTextWidth(titlePaint, getTitle());
-			int titleNeedHeight = TextUtils.getTextHeightByBounds(getTitle(), titlePaint.getTextSize());
+			String title = StringUtils.checkLength(getTitle(), 20);
+			int titleNeedWidth = (int) TextUtils.getTextWidth(titlePaint, title);
+			int titleNeedHeight = TextUtils.getTextHeightByBounds(title, titlePaint.getTextSize());
 			
 			Paint subTitlePaint = new Paint();
 			subTitlePaint.setTextSize(30);
 			subTitlePaint.setColor(Colors.BLACK);
-			int subTitleNeedWidth = (int) TextUtils.getTextWidth(subTitlePaint, getSubTitle());
-			int subTitleNeedHeight = TextUtils.getTextHeightByBounds(getSubTitle(), subTitlePaint.getTextSize());
+			String subTitle = StringUtils.checkLength(getSubTitle(), 20);
+			int subTitleNeedWidth = (int) TextUtils.getTextWidth(subTitlePaint, subTitle);
+			int subTitleNeedHeight = TextUtils.getTextHeightByBounds(subTitle, subTitlePaint.getTextSize());
 			
 			int finalNeedWidth = titleNeedWidth>subTitleNeedWidth?titleNeedWidth:subTitleNeedWidth;
 			int finalNeedHeight = titleNeedHeight + 20 + subTitleNeedHeight;
@@ -110,8 +113,8 @@ public abstract class RectArea implements Area{
 			Canvas canvas = new Canvas(bitmap);
 			backgDrawable.draw(canvas);
 			
-			canvas.drawText(getTitle(), paddingRect.left, paddingRect.top + TextUtils.getTextLeading(titlePaint), titlePaint);
-			canvas.drawText(getSubTitle(), paddingRect.left, paddingRect.top + TextUtils.getTextLeading(subTitlePaint) + 20 + titleNeedHeight, subTitlePaint);
+			canvas.drawText(title, paddingRect.left, paddingRect.top + TextUtils.getTextLeading(titlePaint), titlePaint);
+			canvas.drawText(subTitle, paddingRect.left, paddingRect.top + TextUtils.getTextLeading(subTitlePaint) + 20 + titleNeedHeight, subTitlePaint);
 			
 			bubbleDrawable = new BitmapDrawable(bitmap);
 			bubbleDrawable.setBounds(0, 0, bubbleDrawable.getIntrinsicWidth(), bubbleDrawable.getMinimumHeight());
