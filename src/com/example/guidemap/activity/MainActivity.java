@@ -40,5 +40,6 @@ public class MainActivity extends Activity {
 				}
 			}
 		});
+		guideMapView.showSingleBubble(booths.get(20));
 	}
 }
