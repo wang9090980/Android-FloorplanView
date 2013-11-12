@@ -1,15 +1,6 @@
 package com.example.guidemap.domain;
 
-import me.xiaopan.easy.android.util.Colors;
-import me.xiaopan.easy.android.util.TextUtils;
-import me.xiaopan.easy.java.util.StringUtils;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import com.example.guidemap.R;
@@ -21,6 +12,8 @@ import com.google.gson.annotations.SerializedName;
  * 展位
  */
 public class Booth extends RectArea{
+	public static Drawable baseBubbleDrawable;
+	
 	@Expose
 	@SerializedName("bthId")
 	private String id;	//ID
@@ -190,46 +183,22 @@ public class Booth extends RectArea{
 	public void setCompany(Company company) {
 		this.company = company;
 	}
+	
+	@Override 
+	public int getXOffset(){
+		return 55;
+	}
+	
+	@Override 
+	public int getBubbleDrawableWidth(){
+		return 200;
+	}
 
 	@Override
-	public Drawable getBubbleDrawable(Context context) {
-		if(bubbleDrawable == null){
-			Paint titlePaint = new Paint();
-			titlePaint.setTextSize(40);
-			titlePaint.setColor(Colors.BLACK);
-			String title = StringUtils.checkLength(getTitle(), 20);
-			int titleNeedWidth = (int) TextUtils.getTextWidth(titlePaint, title);
-			int titleNeedHeight = TextUtils.getTextHeightByBounds(title, titlePaint.getTextSize());
-			
-			Paint subTitlePaint = new Paint();
-			subTitlePaint.setTextSize(30);
-			subTitlePaint.setColor(Colors.BLACK);
-			String subTitle = StringUtils.checkLength(getSubTitle(), 20);
-			int subTitleNeedWidth = (int) TextUtils.getTextWidth(subTitlePaint, subTitle);
-			int subTitleNeedHeight = TextUtils.getTextHeightByBounds(subTitle, subTitlePaint.getTextSize());
-			
-			int finalNeedWidth = titleNeedWidth>subTitleNeedWidth?titleNeedWidth:subTitleNeedWidth;
-			int finalNeedHeight = titleNeedHeight + 20 + subTitleNeedHeight;
-			
-			Drawable backgDrawable = context.getResources().getDrawable(R.drawable.bubble);
-			Rect paddingRect = new Rect();
-			backgDrawable.getPadding(paddingRect);
-			
-			finalNeedWidth += paddingRect.left + paddingRect.right;
-			finalNeedHeight += paddingRect.top + paddingRect.bottom;
-			
-			backgDrawable.setBounds(0, 0, backgDrawable.getMinimumWidth()>finalNeedWidth?backgDrawable.getMinimumWidth():finalNeedWidth, backgDrawable.getMinimumHeight()>finalNeedHeight?backgDrawable.getMinimumHeight():finalNeedHeight);
-			
-			Bitmap bitmap = Bitmap.createBitmap(backgDrawable.getBounds().width(), backgDrawable.getBounds().height(), Config.ARGB_8888);
-			Canvas canvas = new Canvas(bitmap);
-			backgDrawable.draw(canvas);
-			
-			canvas.drawText(title, paddingRect.left, paddingRect.top + TextUtils.getTextLeading(titlePaint), titlePaint);
-			canvas.drawText(subTitle, paddingRect.left, paddingRect.top + TextUtils.getTextLeading(subTitlePaint) + 20 + titleNeedHeight, subTitlePaint);
-			
-			bubbleDrawable = new BitmapDrawable(context.getResources(), bitmap);
-			bubbleDrawable.setBounds(0, 0, bubbleDrawable.getIntrinsicWidth(), bubbleDrawable.getMinimumHeight());
+	public Drawable getBaseBubbleDrawable(Context context) {
+		if(baseBubbleDrawable == null){
+			baseBubbleDrawable = context.getResources().getDrawable(R.raw.bubble);
 		}
-		return bubbleDrawable;
+		return baseBubbleDrawable;
 	}
 }
