@@ -247,7 +247,7 @@ public class Booth extends RectArea{
 			canvas.drawText(title, paddingRect.left, paddingRect.top + TextUtils.getTextLeading(titlePaint), titlePaint);
 			canvas.drawText(subTitle, paddingRect.left, paddingRect.top + TextUtils.getTextLeading(subTitlePaint) + 20 + titleNeedHeight, subTitlePaint);
 			
-			bubbleDrawable = new BitmapDrawable(bitmap);
+			bubbleDrawable = new BitmapDrawable(context.getResources(), bitmap);
 			bubbleDrawable.setBounds(0, 0, bubbleDrawable.getIntrinsicWidth(), bubbleDrawable.getMinimumHeight());
 		}
 		return bubbleDrawable;

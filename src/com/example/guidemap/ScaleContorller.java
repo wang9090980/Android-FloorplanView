@@ -8,14 +8,14 @@ import com.example.guidemap.GuideMapView.InitialZoomMode;
 /**
  * 缩放控制器
  */
-public class ZoomContorller implements ScaleGestureDetector.OnScaleGestureListener{
+public class ScaleContorller implements ScaleGestureDetector.OnScaleGestureListener{
 	private float currentScale = 1.0f;
 	private float[] toggleScales;
 	private ScaleGestureDetector scaleGestureDetector;
 	private SimpleGestureDetector simpleGestureDetector;
 	private boolean first = true;
 	
-	public ZoomContorller(SimpleGestureDetector simpleGestureDetector){
+	public ScaleContorller(SimpleGestureDetector simpleGestureDetector){
 		this.simpleGestureDetector = simpleGestureDetector;
 		scaleGestureDetector = new ScaleGestureDetector(simpleGestureDetector.getGuideMapView().getContext(), this);
 		toggleScales = new float[]{1.0f, 2.0f, 3.0f};
@@ -56,13 +56,18 @@ public class ZoomContorller implements ScaleGestureDetector.OnScaleGestureListen
 	}
 	
 	/**
-	 * 设置缩放
+	 * 缩放
 	 * @param newScale
 	 * @param focusX
 	 * @param focusY
 	 * @param animate
 	 */
 	public void setScale(float newScale, float focusX, float focusY, boolean animate) {
+		if(newScale < toggleScales[0]){
+			newScale = toggleScales[0];
+		}else if(newScale > toggleScales[toggleScales.length - 1]){
+			newScale = toggleScales[toggleScales.length - 1];
+		}
 		if (animate) {
 			simpleGestureDetector.getGuideMapView().post(new AnimatedZoomRunnable(simpleGestureDetector, currentScale, newScale, focusX, focusY));
 		} else {

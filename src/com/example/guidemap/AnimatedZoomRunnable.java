@@ -21,15 +21,15 @@ import android.view.animation.Interpolator;
 
 public class AnimatedZoomRunnable  implements Runnable {
 	private static final Interpolator sInterpolator = new AccelerateDecelerateInterpolator();
-    private final float mFocalX, mFocalY;
+    private final float focusX, focusY;
     private final long mStartTime;
     private final float mZoomStart, mZoomEnd;
     private SimpleGestureDetector simpleGestureDetector;
 
     public AnimatedZoomRunnable(SimpleGestureDetector simpleGestureDetector, final float currentZoom, final float targetZoom, final float focalX, final float focalY) {
         this.simpleGestureDetector = simpleGestureDetector;
-    	mFocalX = focalX;
-        mFocalY = focalY;
+    	focusX = focalX;
+        focusY = focalY;
         mStartTime = System.currentTimeMillis();
         mZoomStart = currentZoom;
         mZoomEnd = targetZoom;
@@ -38,7 +38,7 @@ public class AnimatedZoomRunnable  implements Runnable {
     @Override
     public void run() {
         float t = interpolate();
-        simpleGestureDetector.getZoomContorller().postScale((mZoomStart + t * (mZoomEnd - mZoomStart)) / simpleGestureDetector.getZoomContorller().getCurrentScale(), mFocalX, mFocalY);
+        simpleGestureDetector.getScaleContorller().postScale((mZoomStart + t * (mZoomEnd - mZoomStart)) / simpleGestureDetector.getScaleContorller().getCurrentScale(), focusX, focusY);
         if (t < 1f) {
             simpleGestureDetector.getGuideMapView().postDelayed(this, SimpleGestureDetector.SIXTY_FPS_INTERVAL);
         }

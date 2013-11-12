@@ -24,7 +24,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		guideMapView = (GuideMapView) findViewById(R.id.guideMap);
-		List<Area> booths = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(AssetsUtils.getString(getBaseContext(), "booths.txt"), new TypeToken<List<Booth>>(){}.getType()) ;
+		final List<Area> booths = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(AssetsUtils.getString(getBaseContext(), "booths.txt"), new TypeToken<List<Booth>>(){}.getType()) ;
 		guideMapView.setMap(AssetsUtils.getBitmap(getBaseContext(), "44.png"), booths);
 		guideMapView.setInitialZoomMode(InitialZoomMode.MIN);
 		guideMapView.setListener(new Listener() {
@@ -41,5 +41,6 @@ public class MainActivity extends Activity {
 			}
 		});
 		guideMapView.showSingleBubble(booths.get(20));
+		guideMapView.location(booths.get(20).getBubbleDrawableShowPoint(getBaseContext()).x, booths.get(20).getBubbleDrawableShowPoint(getBaseContext()).y);
 	}
 }

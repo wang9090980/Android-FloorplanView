@@ -29,7 +29,7 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 	public static final int ZOOM_DURATION = 200;
 	public static final int SIXTY_FPS_INTERVAL = 1000 / 60;
 	private GuideMapView guideMapView;
-	private ZoomContorller zoomContorller;
+	private ScaleContorller scaleContorller;
 	private GestureDetector generalGestureDetector;
 	private FlingScrollRunnable flingScrollRunnable;
 	private SimpleGestureListener simpleGestureListener;
@@ -38,15 +38,15 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 		this.guideMapView = guideMapView;
 		this.simpleGestureListener = simpleGestureListener;
 		generalGestureDetector = new GestureDetector(guideMapView.getContext(), this);
-		zoomContorller = new ZoomContorller(this);
+		scaleContorller = new ScaleContorller(this);
 	}
 	
 	public boolean onTouchEvent(MotionEvent motionEvent){
 		generalGestureDetector.onTouchEvent(motionEvent);
-		zoomContorller.onTouchEvent(motionEvent);
+		scaleContorller.onTouchEvent(motionEvent);
 		if(motionEvent.getAction() == MotionEvent.ACTION_CANCEL || motionEvent.getAction() == MotionEvent.ACTION_OUTSIDE || motionEvent.getAction() == MotionEvent.ACTION_UP){
-			if(zoomContorller.getCurrentScale() < zoomContorller.getToggleScales()[0]){
-				zoomContorller.setScale(zoomContorller.getToggleScales()[0], motionEvent.getX(), motionEvent.getY(), true);
+			if(scaleContorller.getCurrentScale() < scaleContorller.getToggleScales()[0]){
+				scaleContorller.setScale(scaleContorller.getToggleScales()[0], motionEvent.getX(), motionEvent.getY(), true);
 			}
 		}
 		return true;
@@ -76,7 +76,7 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 
 	@Override
 	public boolean onDoubleTap(MotionEvent e) {
-		zoomContorller.doubleTap(e);
+		scaleContorller.doubleTap(e);
 		if(simpleGestureListener != null){
 			simpleGestureListener.onDoubleTab(e);
 		}
@@ -159,7 +159,7 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
         guideMapView.invalidate();
     }
     
-    public void translate(float x, float y){
+    public void setTranslate(float x, float y){
     	guideMapView.getDrawMatrix().setTranslate(x, y);
         checkMatrixBounds();
         guideMapView.invalidate();
@@ -172,8 +172,8 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 		public void onSingleTapUp(MotionEvent motionEvent);
 	}
 
-	public ZoomContorller getZoomContorller() {
-		return zoomContorller;
+	public ScaleContorller getScaleContorller() {
+		return scaleContorller;
 	}
 
 	public GuideMapView getGuideMapView() {

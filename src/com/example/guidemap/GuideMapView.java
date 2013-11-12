@@ -56,7 +56,7 @@ public class GuideMapView extends View implements SimpleGestureListener{
 	@Override
 	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
 		super.onLayout(changed, left, top, right, bottom);
-		simpleGestureDetector.getZoomContorller().init();
+		simpleGestureDetector.getScaleContorller().init();
 	}
 
 	@Override
@@ -92,6 +92,11 @@ public class GuideMapView extends View implements SimpleGestureListener{
 		return result;
 	}
 
+	/**
+	 * 设置地图
+	 * @param mapBitmap
+	 * @param newAreas
+	 */
 	public void setMap(Bitmap mapBitmap, List<Area> newAreas) {
 		if(mapBitmap != null && newAreas != null && newAreas.size() > 0){
 			this.areas = newAreas;
@@ -114,7 +119,7 @@ public class GuideMapView extends View implements SimpleGestureListener{
 			if(drawMatrix == null){
 				drawMatrix = new Matrix();
 			}
-			simpleGestureDetector.getZoomContorller().init();
+			simpleGestureDetector.getScaleContorller().init();
 			invalidate();
 		}
 	}
@@ -159,8 +164,8 @@ public class GuideMapView extends View implements SimpleGestureListener{
 		if(listener != null && drawable != null){
 			RectF rectF = getDisplayRect();
 			if(rectF != null){
-				float x = (e.getX()-rectF.left)/simpleGestureDetector.getZoomContorller().getCurrentScale();
-				float y = (e.getY()-rectF.top)/simpleGestureDetector.getZoomContorller().getCurrentScale();
+				float x = (e.getX()-rectF.left)/simpleGestureDetector.getScaleContorller().getCurrentScale();
+				float y = (e.getY()-rectF.top)/simpleGestureDetector.getScaleContorller().getCurrentScale();
 				Area clickArea = null;
 				if(bubbleAreas != null && bubbleAreas.size() > 0){
 					for(Area area : bubbleAreas){
@@ -236,8 +241,45 @@ public class GuideMapView extends View implements SimpleGestureListener{
 		}
 	}
 	
-	public void location(Area area){
-		
+	/**
+	 * 移动到指定位置
+	 * @param x 指定位置的X坐标，例如100
+	 * @param y 指定位置的Y坐标，例如200
+	 */
+	public void setTranslate(float x, float y){
+		simpleGestureDetector.setTranslate(-x * simpleGestureDetector.getScaleContorller().getCurrentScale(), -y * simpleGestureDetector.getScaleContorller().getCurrentScale());
+	}
+	
+	/**
+	 * 缩放
+	 * @param newScale 新的缩放比例
+	 * @param focusX 缩放中心点
+	 * @param focusY 缩放中心点
+	 * @param animate
+	 */
+	public void setScale(float newScale, float focusX, float focusY, boolean animate){
+		simpleGestureDetector.getScaleContorller().setScale(newScale, focusX, focusY, animate);
+	}
+	
+	/**
+	 * 缩放
+	 * @param newScale 新的缩放比例
+	 * @param focusX 缩放中心点
+	 * @param focusY 缩放中心点
+	 * @param animate
+	 */
+	public void setScale(float newScale, boolean animate){
+		simpleGestureDetector.getScaleContorller().setScale(newScale, getRight() / 2, getBottom() / 2, animate);
+	}
+	
+	/**
+	 * 定位
+	 * @param x
+	 * @param y
+	 */
+	public void location(float x, float y){
+		setScale(1.0f, false);
+		setTranslate(x, y);
 	}
 	
 	public Matrix getDrawMatrix() {
