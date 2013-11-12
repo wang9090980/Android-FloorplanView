@@ -6,6 +6,7 @@ import me.xiaopan.easy.android.util.AssetsUtils;
 import me.xiaopan.easy.android.util.ToastUtils;
 import android.app.Activity;
 import android.os.Bundle;
+import android.widget.TextView;
 
 import com.example.guidemap.Area;
 import com.example.guidemap.GuideMapView;
@@ -41,5 +42,6 @@ public class MainActivity extends Activity {
 			}
 		});
 		guideMapView.location(booths.get(20));
+		guideMapView.setTextView((TextView) findViewById(R.id.text));
 	}
 }

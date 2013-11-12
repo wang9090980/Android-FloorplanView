@@ -18,6 +18,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.TextView;
 
 import com.example.guidemap.SimpleGestureDetector.SimpleGestureListener;
 
@@ -34,6 +35,8 @@ public class GuideMapView extends View implements SimpleGestureListener{
 	private InitialZoomMode initialZoomMode;
 	private SimpleGestureDetector simpleGestureDetector;	//手势识别器
 	private Area currentDownArea;
+	private TextView textView;
+	private RectF offsetRect;
 
 	public GuideMapView(Context context) {
 		super(context);
@@ -52,6 +55,7 @@ public class GuideMapView extends View implements SimpleGestureListener{
 	
 	private void init(){
 		displayRect = new RectF();
+		offsetRect = new RectF();
 		initialZoomMode = InitialZoomMode.DEFAULT;
 		simpleGestureDetector = new SimpleGestureDetector(this, this);
 	}
@@ -63,21 +67,38 @@ public class GuideMapView extends View implements SimpleGestureListener{
 	}
 
 	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-	}
-
-	@Override
 	protected void onDraw(Canvas canvas) {
 		if(drawable != null){
 			if(drawMatrix != null){
 				canvas.concat(drawMatrix);
 			}
 			drawable.draw(canvas);	//绘制底图
+			offsetRect.set(0, 0, 0, 0);
 			if(bubbleAreas != null && bubbleAreas.size() > 0){	//绘制气泡
 				for(Area area : bubbleAreas){
 					if(area.isShowBubble()){
 						area.drawBubble(getContext(), canvas);
+						
+						/* 记录四边的值，以便扩大显示区域，显示超出部分 */
+						float left = area.getBubbleDrawableShowPoint(getContext()).x * simpleGestureDetector.getScaleContorller().getCurrentScale();
+						if(left < 0 && left < offsetRect.left){
+							offsetRect.left = area.getBubbleDrawableShowPoint(getContext()).x;
+						}
+
+						float top = area.getBubbleDrawableShowPoint(getContext()).y * simpleGestureDetector.getScaleContorller().getCurrentScale();
+						if(top < 0 && top < offsetRect.top){
+							offsetRect.top = area.getBubbleDrawableShowPoint(getContext()).y;
+						}
+						
+						float right = (area.getBubbleDrawableShowPoint(getContext()).x + area.getBubbleDrawable(getContext()).getIntrinsicWidth()) * simpleGestureDetector.getScaleContorller().getCurrentScale();
+						if(right > offsetRect.right){
+							offsetRect.right = right;
+						}
+						
+						float bottom = (area.getBubbleDrawableShowPoint(getContext()).y + area.getBubbleDrawable(getContext()).getIntrinsicHeight()) * simpleGestureDetector.getScaleContorller().getCurrentScale();
+						if(bottom > offsetRect.bottom){
+							offsetRect.bottom = bottom;
+						}
 					}
 				}
 			}
@@ -153,6 +174,19 @@ public class GuideMapView extends View implements SimpleGestureListener{
     	if (drawable != null) {
 			displayRect.set(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
 			drawMatrix.mapRect(displayRect);
+			if(textView != null){
+				textView.setText(displayRect.toString());
+			}
+			
+			/* 尝试扩大显示区域以便显示出超出的部分 */
+			displayRect.left += offsetRect.left;
+			displayRect.top += offsetRect.top;
+			if(offsetRect.right > displayRect.width()){
+				displayRect.right += offsetRect.right - displayRect.width();
+			}
+			if(offsetRect.bottom > displayRect.height()){
+				displayRect.bottom += offsetRect.bottom - displayRect.height();
+			}
 			return displayRect;
 		} else {
 			return null;
@@ -372,5 +406,13 @@ public class GuideMapView extends View implements SimpleGestureListener{
 	public interface Listener{
 		public void onClickArea(Area area);
 		public void onClickAreaBubble(Area area);
+	}
+
+	public TextView getTextView() {
+		return textView;
+	}
+
+	public void setTextView(TextView textView) {
+		this.textView = textView;
 	}
 }
