@@ -14,12 +14,12 @@ public abstract class PathArea implements Area{
 	public abstract PointF[] getCoordinates();
 	
 	@Override
-	public boolean isClickMe(float x, float y){
+	public boolean isClickArea(float x, float y){
 		return GeometryUtils.isPolygonContainPoint(new PointF(x, y), getCoordinates());
 	}
 	
 	@Override
-	public void draw(Canvas canvas, Paint paint){
+	public void drawArea(Canvas canvas, Paint paint){
 		PointF[] coordinates = getCoordinates();
 		if(coordinates != null && coordinates.length >= 3){
 			Path path = new Path();

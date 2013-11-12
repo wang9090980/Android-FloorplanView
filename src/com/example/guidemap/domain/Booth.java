@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -22,8 +21,6 @@ import com.google.gson.annotations.SerializedName;
  * 展位
  */
 public class Booth extends RectArea{
-	private PointF bubbleDrawableShowPoint;
-	private Drawable bubbleDrawable;
 	@Expose
 	@SerializedName("bthId")
 	private String id;	//ID
@@ -195,23 +192,6 @@ public class Booth extends RectArea{
 	}
 
 	@Override
-	public PointF getBubbleDrawableShowPoint(Context context) {
-		if(bubbleDrawableShowPoint == null){
-			float x = (getLeft() + getRight())/2;
-			float y = (getTop() + getBottom())/2;
-			x = (getLeft() + x)/2;
-			y = (getTop() + y)/2;
-			x -= 40;
-			if(bubbleDrawable == null){
-				getBubbleDrawable(context);
-			}
-			y -= bubbleDrawable.getIntrinsicHeight();
-			bubbleDrawableShowPoint = new PointF(x, y);
-		}
-		return bubbleDrawableShowPoint;
-	}
-
-	@Override
 	public Drawable getBubbleDrawable(Context context) {
 		if(bubbleDrawable == null){
 			Paint titlePaint = new Paint();
@@ -251,10 +231,5 @@ public class Booth extends RectArea{
 			bubbleDrawable.setBounds(0, 0, bubbleDrawable.getIntrinsicWidth(), bubbleDrawable.getMinimumHeight());
 		}
 		return bubbleDrawable;
-	}
-
-	@Override
-	public boolean isClickMeBubble(float x, float y) {
-		return x >= bubbleDrawableShowPoint.x && x <= (bubbleDrawableShowPoint.x +bubbleDrawable.getIntrinsicWidth()) && y >= bubbleDrawableShowPoint.y && y <= (bubbleDrawableShowPoint.y +bubbleDrawable.getIntrinsicHeight());
 	}
 }

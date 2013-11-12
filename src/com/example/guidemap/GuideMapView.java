@@ -31,6 +31,7 @@ public class GuideMapView extends View implements SimpleGestureListener{
 	private List<Area> bubbleAreas;
 	private InitialZoomMode initialZoomMode;
 	private SimpleGestureDetector simpleGestureDetector;	//手势识别器
+	private Area currentDownArea;
 
 	public GuideMapView(Context context) {
 		super(context);
@@ -70,14 +71,14 @@ public class GuideMapView extends View implements SimpleGestureListener{
 			if(drawMatrix != null){
 				canvas.concat(drawMatrix);
 			}
-			drawable.draw(canvas);
-			if(bubbleAreas != null && bubbleAreas.size() > 0){
+			drawable.draw(canvas);	//绘制底图
+			if(bubbleAreas != null && bubbleAreas.size() > 0){	//绘制气泡
 				for(Area area : bubbleAreas){
-					canvas.save();
-					canvas.translate(area.getBubbleDrawableShowPoint(getContext()).x, area.getBubbleDrawableShowPoint(getContext()).y);
-					area.getBubbleDrawable(getContext()).draw(canvas);
-					canvas.restore();
+					area.drawBubble(getContext(), canvas);
 				}
+			}
+			if(currentDownArea != null){	//绘制按下状态
+				currentDownArea.drawPressed(getContext(), canvas);
 			}
 		}
 	}
@@ -112,7 +113,7 @@ public class GuideMapView extends View implements SimpleGestureListener{
 			Paint rectPaint = new Paint();
 			rectPaint.setColor(Colors.BLUE_TRANSLUCENT);
 			for(Area area : areas){
-				area.draw(canvas, rectPaint);
+				area.drawArea(canvas, rectPaint);
 			}
 			drawable = new BitmapDrawable(getResources(), showBitmap);
 			drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
@@ -153,43 +154,60 @@ public class GuideMapView extends View implements SimpleGestureListener{
 			return null;
 		}
     }
-
+    
 	@Override
 	public void onDown(MotionEvent motionEvent) {
-		
+		currentDownArea = findClickArea(motionEvent);
 	}
 
 	@Override
 	public void onSingleTapUp(MotionEvent e) {
-		if(listener != null && drawable != null){
+		if(currentDownArea != null){
+			if(currentDownArea.isShowBubble()){
+				listener.onClickAreaBubble(currentDownArea);
+			}else{
+				listener.onClickArea(currentDownArea);
+			}
+		}
+	}
+	
+	/**
+	 * 查找点击的区域
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	private Area findClickArea(MotionEvent e){
+		if(bubbleAreas != null || areas != null){
 			RectF rectF = getDisplayRect();
 			if(rectF != null){
 				float x = (e.getX()-rectF.left)/simpleGestureDetector.getScaleContorller().getCurrentScale();
 				float y = (e.getY()-rectF.top)/simpleGestureDetector.getScaleContorller().getCurrentScale();
+				
 				Area clickArea = null;
 				if(bubbleAreas != null && bubbleAreas.size() > 0){
 					for(Area area : bubbleAreas){
-						if(area.isClickMeBubble(x, y)){
+						if(area.isClickBubble(x, y)){
 							clickArea = area;
 							break;
 						}
 					}
 				}
 				
-				if(clickArea != null){
-					listener.onClickAreaBubble(clickArea);
-				}else if(areas != null && areas.size() > 0){
+				if(clickArea == null && areas != null && areas.size() > 0){
 					for(Area area : areas){
-						if(area.isClickMe(x, y)){
+						if(area.isClickArea(x, y)){
 							clickArea = area;
 							break;
 						}
 					}
-					if(clickArea != null){
-						listener.onClickArea(clickArea);
-					}
 				}
+				return clickArea;
+			}else{
+				return null;
 			}
+		}else{
+			return null;
 		}
 	}
 	
@@ -201,6 +219,13 @@ public class GuideMapView extends View implements SimpleGestureListener{
 	@Override
 	public void onLongPress(MotionEvent motionEvent) {
 		
+	}
+
+	@Override
+	public void onUp(MotionEvent motionEvent) {
+		if(currentDownArea != null){
+			currentDownArea = null;
+		}
 	}
 
 	@Override
@@ -220,6 +245,7 @@ public class GuideMapView extends View implements SimpleGestureListener{
 			if(bubbleAreas == null){
 				bubbleAreas = new ArrayList<Area>();
 			}
+			newArea.setShowBubble(true);
 			bubbleAreas.add(newArea);
 			invalidate();
 		}
@@ -234,10 +260,23 @@ public class GuideMapView extends View implements SimpleGestureListener{
 			if(bubbleAreas == null){
 				bubbleAreas = new ArrayList<Area>(1);
 			}else{
-				bubbleAreas.clear();
+				clearAllBubble();
 			}
+			newArea.setShowBubble(true);
 			bubbleAreas.add(newArea);
 			invalidate();
+		}
+	}
+	
+	/**
+	 * 清除所有气泡
+	 */
+	public void clearAllBubble(){
+		if(bubbleAreas != null && bubbleAreas.size() > 0){
+			for(Area bubbleArea : bubbleAreas){
+				bubbleArea.setShowBubble(false);
+			}
+			bubbleAreas.clear();
 		}
 	}
 	

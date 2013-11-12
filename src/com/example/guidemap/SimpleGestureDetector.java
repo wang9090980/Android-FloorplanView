@@ -48,6 +48,9 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 			if(scaleContorller.getCurrentScale() < scaleContorller.getToggleScales()[0]){
 				scaleContorller.setScale(scaleContorller.getToggleScales()[0], motionEvent.getX(), motionEvent.getY(), true);
 			}
+			if(simpleGestureListener != null){
+				simpleGestureListener.onUp(motionEvent);
+			}
 		}
 		return true;
 	}
@@ -79,7 +82,7 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 		scaleContorller.doubleTap(e);
 		if(simpleGestureListener != null){
 			simpleGestureListener.onDoubleTab(e);
-		}
+	}
 		return true;
 	}
 
@@ -170,6 +173,7 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 		public void onDoubleTab(MotionEvent motionEvent);
 		public void onLongPress(MotionEvent motionEvent);
 		public void onSingleTapUp(MotionEvent motionEvent);
+		public void onUp(MotionEvent motionEvent);
 	}
 
 	public ScaleContorller getScaleContorller() {

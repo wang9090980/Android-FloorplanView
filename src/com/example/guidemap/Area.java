@@ -11,27 +11,41 @@ import android.graphics.drawable.Drawable;
  */
 public interface Area {
 	/**
-	 * 是否点击了我
+	 * 是否点击了矩形区域
 	 * @param x
 	 * @param y
 	 * @return
 	 */
-	public boolean isClickMe(float x, float y);
+	public boolean isClickArea(float x, float y);
 	
 	/**
-	 * 是否点击了我的气泡
+	 * 是否点击了气泡
 	 * @param x
 	 * @param y
 	 * @return
 	 */
-	public boolean isClickMeBubble(float x, float y);
+	public boolean isClickBubble(float x, float y);
 	
 	/**
-	 * 绘制
+	 * 绘制矩形区域
 	 * @param canvas
 	 * @param paint
 	 */
-	public void draw(Canvas canvas, Paint paint);
+	public void drawArea(Canvas canvas, Paint paint);
+	
+	/**
+	 * 绘制气泡
+	 * @param context
+	 * @param canvas
+	 */
+	public void drawBubble(Context context, Canvas canvas);
+	
+	/**
+	 * 绘制按下的样式
+	 * @param canvas
+	 * @param paint
+	 */
+	public void drawPressed(Context context, Canvas canvas);
 	
 	/**
 	 * 获取气泡图片
@@ -46,4 +60,16 @@ public interface Area {
 	 * @return
 	 */
 	public PointF getBubbleDrawableShowPoint(Context context);
+	
+	/**
+	 * 是否显示气泡
+	 * @return
+	 */
+	public boolean isShowBubble();
+	
+	/**
+	 * 设置是否显示气泡
+	 * @param isShowBubble
+	 */
+	public void setShowBubble(boolean isShowBubble);
 }
