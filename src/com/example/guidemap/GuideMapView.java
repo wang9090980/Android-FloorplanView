@@ -156,20 +156,33 @@ public class GuideMapView extends View implements SimpleGestureListener{
 
 	@Override
 	public void onSingleTapUp(MotionEvent e) {
-		if(listener != null && drawable != null && areas != null && areas.size() > 0){
+		if(listener != null && drawable != null){
 			RectF rectF = getDisplayRect();
 			if(rectF != null){
 				float x = (e.getX()-rectF.left)/simpleGestureDetector.getZoomContorller().getCurrentScale();
 				float y = (e.getY()-rectF.top)/simpleGestureDetector.getZoomContorller().getCurrentScale();
 				Area clickArea = null;
-				for(Area area : areas){
-					if(area.isClickMe(x, y)){
-						clickArea = area;
-						break;
+				if(bubbleAreas != null && bubbleAreas.size() > 0){
+					for(Area area : bubbleAreas){
+						if(area.isClickMeBubble(x, y)){
+							clickArea = area;
+							break;
+						}
 					}
 				}
+				
 				if(clickArea != null){
-					listener.onClickArea(clickArea);
+					listener.onClickAreaBubble(clickArea);
+				}else if(areas != null && areas.size() > 0){
+					for(Area area : areas){
+						if(area.isClickMe(x, y)){
+							clickArea = area;
+							break;
+						}
+					}
+					if(clickArea != null){
+						listener.onClickArea(clickArea);
+					}
 				}
 			}
 		}
@@ -249,5 +262,6 @@ public class GuideMapView extends View implements SimpleGestureListener{
 
 	public interface Listener{
 		public void onClickArea(Area area);
+		public void onClickAreaBubble(Area area);
 	}
 }

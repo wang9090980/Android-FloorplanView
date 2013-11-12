@@ -19,6 +19,14 @@ public interface Area {
 	public boolean isClickMe(float x, float y);
 	
 	/**
+	 * 是否点击了我的气泡
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public boolean isClickMeBubble(float x, float y);
+	
+	/**
 	 * 绘制
 	 * @param canvas
 	 * @param paint
