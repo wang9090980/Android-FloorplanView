@@ -195,6 +195,11 @@ public class Booth extends RectArea{
 	}
 
 	@Override
+	public int getVoidHeight() {
+		return 36;
+	}
+
+	@Override
 	public Drawable getBaseBubbleDrawable(Context context) {
 		if(baseBubbleDrawable == null){
 			baseBubbleDrawable = context.getResources().getDrawable(R.raw.bubble);

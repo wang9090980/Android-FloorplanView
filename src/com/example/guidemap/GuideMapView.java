@@ -76,7 +76,9 @@ public class GuideMapView extends View implements SimpleGestureListener{
 			drawable.draw(canvas);	//绘制底图
 			if(bubbleAreas != null && bubbleAreas.size() > 0){	//绘制气泡
 				for(Area area : bubbleAreas){
-					area.drawBubble(getContext(), canvas);
+					if(area.isShowBubble()){
+						area.drawBubble(getContext(), canvas);
+					}
 				}
 			}
 			if(currentDownArea != null){	//绘制按下状态
@@ -166,7 +168,9 @@ public class GuideMapView extends View implements SimpleGestureListener{
 	public void onSingleTapUp(MotionEvent e) {
 		if(currentDownArea != null){
 			if(currentDownArea.isShowBubble()){
-				listener.onClickAreaBubble(currentDownArea);
+				if(!currentDownArea.isClickedArea()){
+					listener.onClickAreaBubble(currentDownArea);
+				}
 			}else{
 				listener.onClickArea(currentDownArea);
 			}
@@ -189,8 +193,9 @@ public class GuideMapView extends View implements SimpleGestureListener{
 				Area clickArea = null;
 				if(bubbleAreas != null && bubbleAreas.size() > 0){
 					for(Area area : bubbleAreas){
-						if(area.isClickBubble(x, y)){
+						if(area.isClickBubble(getContext(), x, y)){
 							clickArea = area;
+							clickArea.setClickedArea(false);
 							break;
 						}
 					}
@@ -200,6 +205,7 @@ public class GuideMapView extends View implements SimpleGestureListener{
 					for(Area area : areas){
 						if(area.isClickArea(x, y)){
 							clickArea = area;
+							clickArea.setClickedArea(true);
 							break;
 						}
 					}

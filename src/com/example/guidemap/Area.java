@@ -20,11 +20,12 @@ public interface Area {
 	
 	/**
 	 * 是否点击了气泡
+	 * @param context
 	 * @param x
 	 * @param y
 	 * @return
 	 */
-	public boolean isClickBubble(float x, float y);
+	public boolean isClickBubble(Context context, float x, float y);
 	
 	/**
 	 * 绘制矩形区域
@@ -72,4 +73,8 @@ public interface Area {
 	 * @param isShowBubble
 	 */
 	public void setShowBubble(boolean isShowBubble);
+	
+	public void setClickedArea(boolean isClickedArea);
+	
+	public boolean isClickedArea();
 }
