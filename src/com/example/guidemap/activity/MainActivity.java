@@ -40,7 +40,6 @@ public class MainActivity extends Activity {
 				}
 			}
 		});
-		guideMapView.showSingleBubble(booths.get(20));
-		guideMapView.location(booths.get(20).getBubbleDrawableShowPoint(getBaseContext()).x, booths.get(20).getBubbleDrawableShowPoint(getBaseContext()).y);
+		guideMapView.location(booths.get(20));
 	}
 }

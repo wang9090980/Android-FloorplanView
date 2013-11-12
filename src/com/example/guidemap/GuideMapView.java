@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.xiaopan.easy.android.util.Colors;
+import me.xiaopan.easy.android.util.ViewUtils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -16,6 +17,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 
 import com.example.guidemap.SimpleGestureDetector.SimpleGestureListener;
 
@@ -316,9 +318,25 @@ public class GuideMapView extends View implements SimpleGestureListener{
 	 * @param x
 	 * @param y
 	 */
-	public void location(float x, float y){
-		setScale(1.0f, false);
-		setTranslate(x, y);
+	public void location(final Area area){
+		if(getWidth() > 0){
+			showSingleBubble(area);
+			setScale(1.0f, false);
+			int offsetWidth = 50;
+			if(getWidth() > area.getBubbleDrawable(getContext()).getIntrinsicWidth()){
+				offsetWidth = (getWidth() - area.getBubbleDrawable(getContext()).getIntrinsicWidth())/2;
+			}
+			int offsetHeight = (getHeight() - area.getBubbleDrawable(getContext()).getIntrinsicHeight())/2;
+			setTranslate(area.getBubbleDrawableShowPoint(getContext()).x- offsetWidth, area.getBubbleDrawableShowPoint(getContext()).y - offsetHeight);
+		}else{
+			getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+				@Override
+				public void onGlobalLayout() {
+					location(area);
+					ViewUtils.removeOnGlobalLayoutListener(getViewTreeObserver(), this);
+				}
+			});
+		}
 	}
 	
 	public Matrix getDrawMatrix() {
