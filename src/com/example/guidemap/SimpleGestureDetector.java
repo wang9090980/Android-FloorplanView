@@ -156,12 +156,22 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 		guideMapView.getDrawMatrix().postTranslate(deltaX, deltaY);
 	}
     
+    /**
+     * 增量移动
+     * @param dx
+     * @param dy
+     */
     public void postTranslate(float dx, float dy){
     	guideMapView.getDrawMatrix().postTranslate(dx, dy);
         checkMatrixBounds();
         guideMapView.invalidate();
     }
     
+    /**
+     * 设置行的移动位置
+     * @param x
+     * @param y
+     */
     public void setTranslate(float x, float y){
     	guideMapView.getDrawMatrix().setTranslate(x, y);
         checkMatrixBounds();

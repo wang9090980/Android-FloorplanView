@@ -19,6 +19,9 @@ package com.example.guidemap;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 
+/**
+ * 动画缩放
+ */
 public class AnimatedZoomRunnable  implements Runnable {
 	private static final Interpolator sInterpolator = new AccelerateDecelerateInterpolator();
     private final float focusX, focusY;

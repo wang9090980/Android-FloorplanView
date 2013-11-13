@@ -13,6 +13,9 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
+/**
+ * 矩形区域
+ */
 public abstract class RectArea implements Area{
 	protected PointF bubbleDrawableShowPoint;
 	protected Drawable bubbleDrawable;

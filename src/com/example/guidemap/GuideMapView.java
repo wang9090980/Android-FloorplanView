@@ -33,7 +33,7 @@ public class GuideMapView extends View implements SimpleGestureListener{
 	private List<Area> areas;
 	private List<Area> bubbleAreas;
 	private InitialZoomMode initialZoomMode;
-	private SimpleGestureDetector simpleGestureDetector;	//手势识别器
+	private SimpleGestureDetector simpleGestureDetector;
 	private Area currentDownArea;
 	private TextView textView;
 	private RectF offsetRect;

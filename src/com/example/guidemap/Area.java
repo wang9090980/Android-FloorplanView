@@ -74,7 +74,15 @@ public interface Area {
 	 */
 	public void setShowBubble(boolean isShowBubble);
 	
+	/**
+	 * 设置点击的是否是矩形区域
+	 * @param isClickedArea true：是；false：不是，不是的话点击的就是气泡
+	 */
 	public void setClickedArea(boolean isClickedArea);
 	
+	/**
+	 * 判断点击的是否是矩形区域
+	 * @return true：是；false：不是，不是的话点击的就是气泡
+	 */
 	public boolean isClickedArea();
 }

@@ -6,6 +6,9 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 
+/**
+ * 路径区域，用来显示多边形
+ */
 public abstract class PathArea implements Area{
 	/**
 	 * 获取所有坐标点

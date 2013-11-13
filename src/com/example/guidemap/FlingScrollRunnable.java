@@ -21,7 +21,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Scroller;
 
 /**
- * 飞速滚动执行器
+ * 飞速滚动
  */
 public class FlingScrollRunnable implements Runnable {
 	private Scroller mScroller;
