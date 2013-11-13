@@ -1,6 +1,5 @@
 package com.example.guidemap;
 
-import me.xiaopan.easy.android.util.Colors;
 import me.xiaopan.easy.android.util.TextUtils;
 import me.xiaopan.easy.java.util.StringUtils;
 import android.content.Context;
@@ -66,9 +65,26 @@ public abstract class RectArea implements Area{
 	
 	public abstract int getVoidHeight();
 	
+	public int getAreaColor(){
+		return 0x800000ff;
+	}
+	
+	public int getPressedColor(){
+		return 0x80ff0000;
+	}
+	
+	public int getTitleColor(){
+		return 0xff000000;
+	}
+	
+	public int getSubTitleColor(){
+		return 0xff000000;
+	}
+	
 	@Override
 	public void drawArea(Canvas canvas, Paint paint){
 		canvas.save();
+		paint.setColor(getAreaColor());
 		canvas.drawRect(getLeft(), getTop(), getRight(), getBottom(), paint);
 		canvas.restore();
 	}
@@ -84,7 +100,7 @@ public abstract class RectArea implements Area{
 	@Override
 	public void drawPressed(Context context, Canvas canvas){
 		Paint paint = new Paint();
-		paint.setColor(Colors.RED_TRANSLUCENT);
+		paint.setColor(getPressedColor());
 		
 		canvas.save();
 		if(isShowBubble()){
@@ -154,14 +170,14 @@ public abstract class RectArea implements Area{
 		if(bubbleDrawable == null){
 			Paint titlePaint = new Paint();
 			titlePaint.setTextSize(40);
-			titlePaint.setColor(Colors.BLACK);
+			titlePaint.setColor(getTitleColor());
 			String title = StringUtils.checkLength(getTitle(), 20);
 			int titleNeedWidth = (int) TextUtils.getTextWidth(titlePaint, title);
 			int titleNeedHeight = TextUtils.getTextHeightByBounds(title, titlePaint.getTextSize());
 			
 			Paint subTitlePaint = new Paint();
 			subTitlePaint.setTextSize(30);
-			subTitlePaint.setColor(Colors.BLACK);
+			subTitlePaint.setColor(getSubTitleColor());
 			String subTitle = StringUtils.checkLength(getSubTitle(), 20);
 			int subTitleNeedWidth = (int) TextUtils.getTextWidth(subTitlePaint, subTitle);
 			int subTitleNeedHeight = TextUtils.getTextHeightByBounds(subTitle, subTitlePaint.getTextSize());

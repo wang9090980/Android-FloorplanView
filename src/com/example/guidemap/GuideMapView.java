@@ -3,7 +3,6 @@ package com.example.guidemap;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.xiaopan.easy.android.util.Colors;
 import me.xiaopan.easy.android.util.ViewUtils;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -136,7 +135,6 @@ public class GuideMapView extends View implements SimpleGestureListener{
 			mapBitmap.recycle();
 			Canvas canvas = new Canvas(showBitmap);
 			Paint rectPaint = new Paint();
-			rectPaint.setColor(Colors.BLUE_TRANSLUCENT);
 			for(Area area : areas){
 				area.drawArea(canvas, rectPaint);
 			}
