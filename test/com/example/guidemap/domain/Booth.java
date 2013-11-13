@@ -185,12 +185,12 @@ public class Booth extends RectArea{
 	}
 	
 	@Override 
-	public int getXOffset(){
+	public int getBubbleXOffset(){
 		return 55;
 	}
 	
 	@Override 
-	public int getBubbleDrawableWidth(){
+	public int getBubbleDrawableOriginalWidth(){
 		return 200;
 	}
 
