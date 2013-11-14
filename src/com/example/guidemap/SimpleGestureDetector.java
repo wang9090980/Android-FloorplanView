@@ -69,12 +69,7 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 
 	@Override
 	public boolean onSingleTapUp(MotionEvent e) {
-		if(simpleGestureListener != null){
-			simpleGestureListener.onSingleTapUp(e);
-			return true;
-		}else{
-			return false;
-		}
+		return true;
 	}
 
 	@Override
@@ -82,7 +77,7 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 		scaleContorller.doubleTap(e);
 		if(simpleGestureListener != null){
 			simpleGestureListener.onDoubleTab(e);
-	}
+		}
 		return true;
 	}
 
@@ -123,7 +118,12 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 
 	@Override
 	public boolean onSingleTapConfirmed(MotionEvent e) {
-		return true;
+		if(simpleGestureListener != null){
+			simpleGestureListener.onSingleTapUp(e);
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 	/**
