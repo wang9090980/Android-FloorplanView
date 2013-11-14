@@ -108,6 +108,7 @@ public class GuideMapView extends View implements SimpleGestureListener{
 			this.areas = newAreas;
 			//释放旧的图片
 			if(drawable != null){
+				drawable.setCallback(null);
 				unscheduleDrawable(drawable);
 			}
 			
