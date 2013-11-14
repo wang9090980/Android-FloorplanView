@@ -77,27 +77,7 @@ public class GuideMapView extends View implements SimpleGestureListener{
 				for(Area area : bubbleAreas){
 					if(area.isShowBubble()){
 						area.drawBubble(getContext(), canvas);
-						
-						/* 记录四边的值，以便扩大显示区域，显示超出部分 */
-						float left = area.getBubbleDrawableShowPoint(getContext()).x * simpleGestureDetector.getScaleContorller().getCurrentScale();
-						if(left < 0 && left < offsetRect.left){
-							offsetRect.left = area.getBubbleDrawableShowPoint(getContext()).x;
-						}
-
-						float top = area.getBubbleDrawableShowPoint(getContext()).y * simpleGestureDetector.getScaleContorller().getCurrentScale();
-						if(top < 0 && top < offsetRect.top){
-							offsetRect.top = area.getBubbleDrawableShowPoint(getContext()).y;
-						}
-						
-						float right = (area.getBubbleDrawableShowPoint(getContext()).x + area.getBubbleDrawable(getContext()).getIntrinsicWidth()) * simpleGestureDetector.getScaleContorller().getCurrentScale();
-						if(right > offsetRect.right){
-							offsetRect.right = right;
-						}
-						
-						float bottom = (area.getBubbleDrawableShowPoint(getContext()).y + area.getBubbleDrawable(getContext()).getIntrinsicHeight()) * simpleGestureDetector.getScaleContorller().getCurrentScale();
-						if(bottom > offsetRect.bottom){
-							offsetRect.bottom = bottom;
-						}
+						checkOffset(area);
 					}
 				}
 			}
@@ -287,6 +267,9 @@ public class GuideMapView extends View implements SimpleGestureListener{
 			}
 			newArea.setShowBubble(true);
 			bubbleAreas.add(newArea);
+			offsetRect.set(0, 0, 0, 0);
+			checkOffset(newArea);
+			simpleGestureDetector.checkMatrixBounds();
 			invalidate();
 		}
 	}
@@ -304,6 +287,9 @@ public class GuideMapView extends View implements SimpleGestureListener{
 			}
 			newArea.setShowBubble(true);
 			bubbleAreas.add(newArea);
+			offsetRect.set(0, 0, 0, 0);
+			checkOffset(newArea);
+			simpleGestureDetector.checkMatrixBounds();
 			invalidate();
 		}
 	}
@@ -374,6 +360,29 @@ public class GuideMapView extends View implements SimpleGestureListener{
 					ViewUtils.removeOnGlobalLayoutListener(getViewTreeObserver(), this);
 				}
 			});
+		}
+	}
+	
+	private void checkOffset(Area area){
+		/* 记录四边的值，以便扩大显示区域，显示超出部分 */
+		float left = area.getBubbleDrawableShowPoint(getContext()).x * simpleGestureDetector.getScaleContorller().getCurrentScale();
+		if(left < 0 && left < offsetRect.left){
+			offsetRect.left = area.getBubbleDrawableShowPoint(getContext()).x;
+		}
+
+		float top = area.getBubbleDrawableShowPoint(getContext()).y * simpleGestureDetector.getScaleContorller().getCurrentScale();
+		if(top < 0 && top < offsetRect.top){
+			offsetRect.top = area.getBubbleDrawableShowPoint(getContext()).y;
+		}
+		
+		float right = (area.getBubbleDrawableShowPoint(getContext()).x + area.getBubbleDrawable(getContext()).getIntrinsicWidth()) * simpleGestureDetector.getScaleContorller().getCurrentScale();
+		if(right > offsetRect.right){
+			offsetRect.right = right;
+		}
+		
+		float bottom = (area.getBubbleDrawableShowPoint(getContext()).y + area.getBubbleDrawable(getContext()).getIntrinsicHeight()) * simpleGestureDetector.getScaleContorller().getCurrentScale();
+		if(bottom > offsetRect.bottom){
+			offsetRect.bottom = bottom;
 		}
 	}
 	
