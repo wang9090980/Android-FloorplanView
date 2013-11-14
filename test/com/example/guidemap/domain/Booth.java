@@ -20,7 +20,7 @@ public class Booth extends RectArea{
 
 	@Expose
 	@SerializedName("bthCode")
-	private String number;	//编号
+	private String number = "";	//编号
 	
 	@Expose
 	@SerializedName("x")
@@ -44,7 +44,7 @@ public class Booth extends RectArea{
 
 	@Override
 	public String getTitle() {
-		return company != null?company.getAtrName():null;
+		return company != null?company.getAtrName():"";
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package com.example.guidemap;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.xiaopan.easy.android.util.AndroidLogger;
 import me.xiaopan.easy.android.util.ViewUtils;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -157,6 +158,7 @@ public class GuideMapView extends View implements SimpleGestureListener{
 			}
 			
 			/* 尝试扩大显示区域以便显示出超出的部分 */
+			AndroidLogger.e(offsetRect.toString());
 			displayRect.left += offsetRect.left;
 			displayRect.top += offsetRect.top;
 			if(offsetRect.right > displayRect.width()){
@@ -367,12 +369,12 @@ public class GuideMapView extends View implements SimpleGestureListener{
 		/* 记录四边的值，以便扩大显示区域，显示超出部分 */
 		float left = area.getBubbleDrawableShowPoint(getContext()).x * simpleGestureDetector.getScaleContorller().getCurrentScale();
 		if(left < 0 && left < offsetRect.left){
-			offsetRect.left = area.getBubbleDrawableShowPoint(getContext()).x;
+			offsetRect.left = left;
 		}
 
 		float top = area.getBubbleDrawableShowPoint(getContext()).y * simpleGestureDetector.getScaleContorller().getCurrentScale();
 		if(top < 0 && top < offsetRect.top){
-			offsetRect.top = area.getBubbleDrawableShowPoint(getContext()).y;
+			offsetRect.top = top;
 		}
 		
 		float right = (area.getBubbleDrawableShowPoint(getContext()).x + area.getBubbleDrawable(getContext()).getIntrinsicWidth()) * simpleGestureDetector.getScaleContorller().getCurrentScale();
