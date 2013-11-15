@@ -8,11 +8,12 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.example.guidemap.Area;
-import com.example.guidemap.GuideView;
-import com.example.guidemap.GuideView.InitialZoomMode;
-import com.example.guidemap.GuideView.Listener;
-import com.example.guidemap.R;
+import me.xiaopan.guide.Area;
+import me.xiaopan.guide.GuideView;
+import me.xiaopan.guide.R;
+import me.xiaopan.guide.GuideView.InitialZoomMode;
+import me.xiaopan.guide.GuideView.Listener;
+
 import com.example.guidemap.domain.Booth;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;

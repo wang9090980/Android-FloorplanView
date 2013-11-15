@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.guidemap;
+package me.xiaopan.guide;
 
 import android.graphics.RectF;
 import android.view.animation.AccelerateDecelerateInterpolator;

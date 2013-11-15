@@ -1,9 +1,9 @@
-package com.example.guidemap;
+package me.xiaopan.guide;
 
+import me.xiaopan.guide.GuideView.InitialZoomMode;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
-import com.example.guidemap.GuideView.InitialZoomMode;
 
 /**
  * 缩放控制器

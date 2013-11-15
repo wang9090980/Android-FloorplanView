@@ -3,8 +3,9 @@ package com.example.guidemap.domain;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
-import com.example.guidemap.R;
-import com.example.guidemap.RectArea;
+import me.xiaopan.guide.R;
+import me.xiaopan.guide.RectArea;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

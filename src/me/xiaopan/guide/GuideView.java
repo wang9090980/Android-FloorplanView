@@ -1,10 +1,11 @@
-package com.example.guidemap;
+package me.xiaopan.guide;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import me.xiaopan.easy.android.util.AndroidLogger;
 import me.xiaopan.easy.android.util.ViewUtils;
+import me.xiaopan.guide.SimpleGestureDetector.SimpleGestureListener;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -20,7 +21,6 @@ import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.TextView;
 
-import com.example.guidemap.SimpleGestureDetector.SimpleGestureListener;
 
 /**
  * 导览图

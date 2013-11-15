@@ -1,4 +1,4 @@
-package com.example.guidemap;
+package me.xiaopan.guide;
 
 import me.xiaopan.easy.android.util.GeometryUtils;
 import android.graphics.Canvas;
