@@ -9,22 +9,22 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import com.example.guidemap.Area;
-import com.example.guidemap.GuideMapView;
-import com.example.guidemap.GuideMapView.InitialZoomMode;
-import com.example.guidemap.GuideMapView.Listener;
+import com.example.guidemap.GuideView;
+import com.example.guidemap.GuideView.InitialZoomMode;
+import com.example.guidemap.GuideView.Listener;
 import com.example.guidemap.R;
 import com.example.guidemap.domain.Booth;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 public class MainActivity extends Activity {
-	private GuideMapView guideMapView;
+	private GuideView guideMapView;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		guideMapView = (GuideMapView) findViewById(R.id.guideMap);
+		guideMapView = (GuideView) findViewById(R.id.guideMap);
 		final List<Area> booths = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(AssetsUtils.getString(getBaseContext(), "booths.txt"), new TypeToken<List<Booth>>(){}.getType());
 		guideMapView.setMap(AssetsUtils.getBitmap(getBaseContext(), "44.png"), booths);
 		guideMapView.setInitialZoomMode(InitialZoomMode.MIN);

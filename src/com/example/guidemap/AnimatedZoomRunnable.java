@@ -43,7 +43,7 @@ public class AnimatedZoomRunnable  implements Runnable {
         float t = interpolate();
         simpleGestureDetector.getScaleContorller().postScale((mZoomStart + t * (mZoomEnd - mZoomStart)) / simpleGestureDetector.getScaleContorller().getCurrentScale(), focusX, focusY);
         if (t < 1f) {
-            simpleGestureDetector.getGuideMapView().postDelayed(this, SimpleGestureDetector.SIXTY_FPS_INTERVAL);
+            simpleGestureDetector.getGuideView().postDelayed(this, SimpleGestureDetector.SIXTY_FPS_INTERVAL);
         }
     }
 

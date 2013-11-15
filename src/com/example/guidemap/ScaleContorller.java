@@ -3,7 +3,7 @@ package com.example.guidemap;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
-import com.example.guidemap.GuideMapView.InitialZoomMode;
+import com.example.guidemap.GuideView.InitialZoomMode;
 
 /**
  * 缩放控制器
@@ -17,7 +17,7 @@ public class ScaleContorller implements ScaleGestureDetector.OnScaleGestureListe
 	
 	public ScaleContorller(SimpleGestureDetector simpleGestureDetector){
 		this.simpleGestureDetector = simpleGestureDetector;
-		scaleGestureDetector = new ScaleGestureDetector(simpleGestureDetector.getGuideMapView().getContext(), this);
+		scaleGestureDetector = new ScaleGestureDetector(simpleGestureDetector.getGuideView().getContext(), this);
 		toggleScales = new float[]{1.0f, 2.0f, 3.0f};
 	}
 	
@@ -27,7 +27,7 @@ public class ScaleContorller implements ScaleGestureDetector.OnScaleGestureListe
 
 	@Override
 	public boolean onScale(ScaleGestureDetector detector) {
-		if(simpleGestureDetector.getGuideMapView().getDrawable() != null && simpleGestureDetector.getGuideMapView().getDrawMatrix() != null){
+		if(simpleGestureDetector.getGuideView().getDrawable() != null && simpleGestureDetector.getGuideView().getDrawMatrix() != null){
 			postScale(detector.getScaleFactor(), detector.getFocusX(), detector.getFocusY());
 			return true;
 		}else{
@@ -50,9 +50,9 @@ public class ScaleContorller implements ScaleGestureDetector.OnScaleGestureListe
 		}else{
 			currentScale *= newScaleFactor;
 		}
-		simpleGestureDetector.getGuideMapView().getDrawMatrix().postScale(newScaleFactor, newScaleFactor, focusX, focusY);
+		simpleGestureDetector.getGuideView().getDrawMatrix().postScale(newScaleFactor, newScaleFactor, focusX, focusY);
 		simpleGestureDetector.checkMatrixBounds();
-		simpleGestureDetector.getGuideMapView().invalidate();
+		simpleGestureDetector.getGuideView().invalidate();
 	}
 	
 	/**
@@ -69,12 +69,12 @@ public class ScaleContorller implements ScaleGestureDetector.OnScaleGestureListe
 			newScale = toggleScales[toggleScales.length - 1];
 		}
 		if (animate) {
-			simpleGestureDetector.getGuideMapView().post(new AnimatedZoomRunnable(simpleGestureDetector, currentScale, newScale, focusX, focusY));
+			simpleGestureDetector.getGuideView().post(new AnimatedZoomRunnable(simpleGestureDetector, currentScale, newScale, focusX, focusY));
 		} else {
 			currentScale = newScale;
-			simpleGestureDetector.getGuideMapView().getDrawMatrix().setScale(newScale, newScale, focusX, focusY);
+			simpleGestureDetector.getGuideView().getDrawMatrix().setScale(newScale, newScale, focusX, focusY);
 			simpleGestureDetector.checkMatrixBounds();
-			simpleGestureDetector.getGuideMapView().invalidate();
+			simpleGestureDetector.getGuideView().invalidate();
 		}
 	}
 	
@@ -82,9 +82,9 @@ public class ScaleContorller implements ScaleGestureDetector.OnScaleGestureListe
 	 * 初始化
 	 */
 	public void init(){
-		if(simpleGestureDetector.getGuideMapView().getDrawable() != null && simpleGestureDetector.getGuideMapView().getWidth() > 0 && simpleGestureDetector.getGuideMapView().getHeight() > 0){
-			float widthScale = (float) simpleGestureDetector.getGuideMapView().getWidth()/(float) simpleGestureDetector.getGuideMapView().getDrawable().getIntrinsicWidth();
-			float heightScale = (float) simpleGestureDetector.getGuideMapView().getHeight()/(float) simpleGestureDetector.getGuideMapView().getDrawable().getIntrinsicHeight();
+		if(simpleGestureDetector.getGuideView().getDrawable() != null && simpleGestureDetector.getGuideView().getWidth() > 0 && simpleGestureDetector.getGuideView().getHeight() > 0){
+			float widthScale = (float) simpleGestureDetector.getGuideView().getWidth()/(float) simpleGestureDetector.getGuideView().getDrawable().getIntrinsicWidth();
+			float heightScale = (float) simpleGestureDetector.getGuideView().getHeight()/(float) simpleGestureDetector.getGuideView().getDrawable().getIntrinsicHeight();
 			toggleScales[0] = widthScale < heightScale?(widthScale<1.0f?widthScale:1.0f):(heightScale<1.0f?heightScale:1.0f);
 			if(toggleScales[0] < 1.0f){
 				toggleScales[1] = 1.0f;
@@ -99,11 +99,11 @@ public class ScaleContorller implements ScaleGestureDetector.OnScaleGestureListe
 			toggleScales[2] = 3.0f;
 		}
 		if(first){
-			if(simpleGestureDetector.getGuideMapView().getInitialZoomMode() == InitialZoomMode.MIN){
+			if(simpleGestureDetector.getGuideView().getInitialZoomMode() == InitialZoomMode.MIN){
 				setScale(toggleScales[0], 0, 0, false);
-			}else if(simpleGestureDetector.getGuideMapView().getInitialZoomMode() == InitialZoomMode.DEFAULT){
+			}else if(simpleGestureDetector.getGuideView().getInitialZoomMode() == InitialZoomMode.DEFAULT){
 				setScale(1.0f, 0, 0, false);
-			}else if(simpleGestureDetector.getGuideMapView().getInitialZoomMode() == InitialZoomMode.MAX){
+			}else if(simpleGestureDetector.getGuideView().getInitialZoomMode() == InitialZoomMode.MAX){
 				setScale(toggleScales[toggleScales.length - 1], 0, 0, false);
 			}
 			first = false;

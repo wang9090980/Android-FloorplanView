@@ -30,7 +30,7 @@ public class FlingScrollRunnable implements Runnable {
 	
 	public FlingScrollRunnable(SimpleGestureDetector simpleGestureDetector){
 		this.simpleGestureDetector = simpleGestureDetector;
-		mScroller = new Scroller(simpleGestureDetector.getGuideMapView().getContext(), new AccelerateDecelerateInterpolator());
+		mScroller = new Scroller(simpleGestureDetector.getGuideView().getContext(), new AccelerateDecelerateInterpolator());
 	}
 	
 	public void cancelFling(){
@@ -38,7 +38,7 @@ public class FlingScrollRunnable implements Runnable {
 	}
 	
 	public void fling(int viewWidth, int viewHeight, int velocityX, int velocityY){
-		final RectF rect = simpleGestureDetector.getGuideMapView().getDisplayRect();
+		final RectF rect = simpleGestureDetector.getGuideView().getDisplayRect();
         if (null == rect) {
             return;
         }
@@ -81,7 +81,7 @@ public class FlingScrollRunnable implements Runnable {
             simpleGestureDetector.postTranslate(-(mCurrentX - newX), -(mCurrentY - newY));
             mCurrentX = newX;
             mCurrentY = newY;
-            simpleGestureDetector.getGuideMapView().postDelayed(this, SimpleGestureDetector.SIXTY_FPS_INTERVAL);
+            simpleGestureDetector.getGuideView().postDelayed(this, SimpleGestureDetector.SIXTY_FPS_INTERVAL);
         }
 	}
 }

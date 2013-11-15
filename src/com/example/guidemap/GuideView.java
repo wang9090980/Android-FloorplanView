@@ -25,7 +25,7 @@ import com.example.guidemap.SimpleGestureDetector.SimpleGestureListener;
 /**
  * 导览图
  */
-public class GuideMapView extends View implements SimpleGestureListener{
+public class GuideView extends View implements SimpleGestureListener{
 	private RectF displayRect;
 	private Matrix drawMatrix;
 	private Listener listener;
@@ -38,17 +38,17 @@ public class GuideMapView extends View implements SimpleGestureListener{
 	private TextView textView;
 	private RectF offsetRect;
 
-	public GuideMapView(Context context) {
+	public GuideView(Context context) {
 		super(context);
 		init();
 	}
 
-	public GuideMapView(Context context, AttributeSet attrs) {
+	public GuideView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init();
 	}
 
-	public GuideMapView(Context context, AttributeSet attrs, int defStyle) {
+	public GuideView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		init();
 	}

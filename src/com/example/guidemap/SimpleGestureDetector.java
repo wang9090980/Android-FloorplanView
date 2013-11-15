@@ -28,16 +28,16 @@ import android.view.MotionEvent;
 public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapListener{
 	public static final int ZOOM_DURATION = 200;
 	public static final int SIXTY_FPS_INTERVAL = 1000 / 60;
-	private GuideMapView guideMapView;
+	private GuideView guideView;
 	private ScaleContorller scaleContorller;
 	private GestureDetector generalGestureDetector;
 	private FlingScrollRunnable flingScrollRunnable;
 	private SimpleGestureListener simpleGestureListener;
 	
-	public SimpleGestureDetector(GuideMapView guideMapView, SimpleGestureListener simpleGestureListener){
-		this.guideMapView = guideMapView;
+	public SimpleGestureDetector(GuideView guideView, SimpleGestureListener simpleGestureListener){
+		this.guideView = guideView;
 		this.simpleGestureListener = simpleGestureListener;
-		generalGestureDetector = new GestureDetector(guideMapView.getContext(), this);
+		generalGestureDetector = new GestureDetector(guideView.getContext(), this);
 		scaleContorller = new ScaleContorller(this);
 	}
 	
@@ -91,14 +91,14 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 		flingScrollRunnable = new FlingScrollRunnable(this);
-		flingScrollRunnable.fling(guideMapView.getAvailableWidth(), guideMapView.getAvailableHeight(), (int) velocityX, (int) velocityY);
-		guideMapView.post(flingScrollRunnable);
+		flingScrollRunnable.fling(guideView.getAvailableWidth(), guideView.getAvailableHeight(), (int) velocityX, (int) velocityY);
+		guideView.post(flingScrollRunnable);
 		return true;
 	}
 
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-		if(guideMapView.getDrawable() != null && guideMapView.getDrawMatrix() != null){
+		if(guideView.getDrawable() != null && guideView.getDrawMatrix() != null){
 			postTranslate(-distanceX, -distanceY);
 			return true;
 		}else{
@@ -130,11 +130,11 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 	 * 检查矩阵边界，防止滑动时超出边界
 	 */
     public void checkMatrixBounds(){
-		RectF rect = guideMapView.getDisplayRect();
+		RectF rect = guideView.getDisplayRect();
 		final float height = rect.height(), width = rect.width();
 		float deltaX = 0, deltaY = 0;
 
-		final int viewHeight = guideMapView.getAvailableHeight();
+		final int viewHeight = guideView.getAvailableHeight();
 		if (height <= viewHeight) {
 			deltaY = (viewHeight - height) / 2 - rect.top;
 		} else if (rect.top > 0) {
@@ -143,7 +143,7 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 			deltaY = viewHeight - rect.bottom;
 		}
 
-		final int viewWidth = guideMapView.getAvailableWidth();
+		final int viewWidth = guideView.getAvailableWidth();
 		if (width <= viewWidth) {
 			deltaX = (viewWidth - width) / 2 - rect.left;
 		} else if (rect.left > 0) {
@@ -153,7 +153,7 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 		} else {
 		}
 
-		guideMapView.getDrawMatrix().postTranslate(deltaX, deltaY);
+		guideView.getDrawMatrix().postTranslate(deltaX, deltaY);
 	}
     
     /**
@@ -162,9 +162,9 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
      * @param dy
      */
     public void postTranslate(float dx, float dy){
-    	guideMapView.getDrawMatrix().postTranslate(dx, dy);
+    	guideView.getDrawMatrix().postTranslate(dx, dy);
         checkMatrixBounds();
-        guideMapView.invalidate();
+        guideView.invalidate();
     }
     
     /**
@@ -173,9 +173,9 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
      * @param y
      */
     public void setTranslate(float x, float y){
-    	guideMapView.getDrawMatrix().setTranslate(x, y);
+    	guideView.getDrawMatrix().setTranslate(x, y);
         checkMatrixBounds();
-        guideMapView.invalidate();
+        guideView.invalidate();
     }
 	
 	public interface SimpleGestureListener{
@@ -190,7 +190,7 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 		return scaleContorller;
 	}
 
-	public GuideMapView getGuideMapView() {
-		return guideMapView;
+	public GuideView getGuideView() {
+		return guideView;
 	}
 }
