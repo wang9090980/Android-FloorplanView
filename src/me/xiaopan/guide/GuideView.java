@@ -55,14 +55,15 @@ public class GuideView extends View implements SimpleGestureListener{
 	private void init(){
 		displayRect = new RectF();
 		offsetRect = new RectF();
-		initialZoomMode = InitialZoomMode.DEFAULT;
-		simpleGestureDetector = new SimpleGestureDetector(this, this);
+		initialZoomMode = InitialZoomMode.MIN;
 	}
 	
 	@Override
 	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
 		super.onLayout(changed, left, top, right, bottom);
-		simpleGestureDetector.getScaleContorller().init();
+		if(isAllow()){
+			simpleGestureDetector.getScaleContorller().init();
+		}
 	}
 
 	@Override
@@ -89,12 +90,14 @@ public class GuideView extends View implements SimpleGestureListener{
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		boolean result = false;
-		if(simpleGestureDetector != null){
+		if(isAllow()){
+			boolean result = false;
 			result = simpleGestureDetector.onTouchEvent(event);
 			invalidate();
+			return result;
+		}else{
+			return super.onTouchEvent(event);
 		}
-		return result;
 	}
 
 	/**
@@ -103,13 +106,24 @@ public class GuideView extends View implements SimpleGestureListener{
 	 * @param newAreas
 	 */
 	public void setMap(Bitmap mapBitmap, List<Area> newAreas) {
+		//释放旧的图片
+		if(drawable != null){
+			drawable.setCallback(null);
+			unscheduleDrawable(drawable);
+			drawable = null;
+		}
+		
+		if(drawMatrix != null){
+			drawMatrix.reset();
+			drawMatrix = null;
+		}
+		
+		if(simpleGestureDetector != null){
+			simpleGestureDetector = null;
+		}
+		
 		if(mapBitmap != null && newAreas != null && newAreas.size() > 0){
 			this.areas = newAreas;
-			//释放旧的图片
-			if(drawable != null){
-				drawable.setCallback(null);
-				unscheduleDrawable(drawable);
-			}
 			
 			/* 绘制新的图片 */
 			Bitmap showBitmap = mapBitmap.copy(Config.ARGB_8888, true);
@@ -121,9 +135,8 @@ public class GuideView extends View implements SimpleGestureListener{
 			}
 			drawable = new BitmapDrawable(getResources(), showBitmap);
 			drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-			if(drawMatrix == null){
-				drawMatrix = new Matrix();
-			}
+			drawMatrix = new Matrix();
+			simpleGestureDetector = new SimpleGestureDetector(this, this);
 			simpleGestureDetector.getScaleContorller().init();
 			invalidate();
 		}
@@ -150,7 +163,7 @@ public class GuideView extends View implements SimpleGestureListener{
      * @return
      */
     public final RectF getDisplayRect() {
-    	if (drawable != null) {
+    	if (isAllow()) {
 			displayRect.set(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
 			drawMatrix.mapRect(displayRect);
 			if(textView != null){
@@ -174,12 +187,14 @@ public class GuideView extends View implements SimpleGestureListener{
     
 	@Override
 	public void onDown(MotionEvent motionEvent) {
-		currentDownArea = findClickArea(motionEvent);
+		if(isAllow()){
+			currentDownArea = findClickArea(motionEvent);
+		}
 	}
 
 	@Override
 	public void onSingleTapUp(MotionEvent e) {
-		if(currentDownArea != null){
+		if(isAllow() && currentDownArea != null){
 			if(currentDownArea.isShowBubble()){
 				if(!currentDownArea.isClickedArea()){
 					listener.onClickAreaBubble(currentDownArea);
@@ -197,7 +212,7 @@ public class GuideView extends View implements SimpleGestureListener{
 	 * @return
 	 */
 	private Area findClickArea(MotionEvent e){
-		if(bubbleAreas != null || areas != null){
+		if(isAllow() && bubbleAreas != null || areas != null){
 			RectF rectF = getDisplayRect();
 			if(rectF != null){
 				float x = (e.getX()-rectF.left)/simpleGestureDetector.getScaleContorller().getCurrentScale();
@@ -244,7 +259,7 @@ public class GuideView extends View implements SimpleGestureListener{
 
 	@Override
 	public void onUp(MotionEvent motionEvent) {
-		if(currentDownArea != null){
+		if(isAllow() && currentDownArea != null){
 			currentDownArea = null;
 		}
 	}
@@ -253,6 +268,7 @@ public class GuideView extends View implements SimpleGestureListener{
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
 		if(drawable != null){
+			drawable.setCallback(null);
 			unscheduleDrawable(drawable);
 		}
 	}
@@ -262,7 +278,7 @@ public class GuideView extends View implements SimpleGestureListener{
 	 * @param newArea
 	 */
 	public void showBubble(Area newArea){
-		if(newArea != null){
+		if(isAllow() && newArea != null){
 			if(bubbleAreas == null){
 				bubbleAreas = new ArrayList<Area>();
 			}
@@ -280,7 +296,7 @@ public class GuideView extends View implements SimpleGestureListener{
 	 * @param newArea
 	 */
 	public void showSingleBubble(Area newArea){
-		if(newArea != null){
+		if(isAllow() && newArea != null){
 			if(bubbleAreas == null){
 				bubbleAreas = new ArrayList<Area>(1);
 			}else{
@@ -299,7 +315,7 @@ public class GuideView extends View implements SimpleGestureListener{
 	 * 清除所有气泡
 	 */
 	public void clearAllBubble(){
-		if(bubbleAreas != null && bubbleAreas.size() > 0){
+		if(isAllow() && bubbleAreas != null && bubbleAreas.size() > 0){
 			for(Area bubbleArea : bubbleAreas){
 				bubbleArea.setShowBubble(false);
 			}
@@ -313,7 +329,9 @@ public class GuideView extends View implements SimpleGestureListener{
 	 * @param y 指定位置的Y坐标，例如200
 	 */
 	public void setTranslate(float x, float y){
-		simpleGestureDetector.setTranslate(-x * simpleGestureDetector.getScaleContorller().getCurrentScale(), -y * simpleGestureDetector.getScaleContorller().getCurrentScale());
+		if(isAllow()){
+			simpleGestureDetector.setTranslate(-x * simpleGestureDetector.getScaleContorller().getCurrentScale(), -y * simpleGestureDetector.getScaleContorller().getCurrentScale());
+		}
 	}
 	
 	/**
@@ -324,7 +342,9 @@ public class GuideView extends View implements SimpleGestureListener{
 	 * @param animate
 	 */
 	public void setScale(float newScale, float focusX, float focusY, boolean animate){
-		simpleGestureDetector.getScaleContorller().setScale(newScale, focusX, focusY, animate);
+		if(isAllow()){
+			simpleGestureDetector.getScaleContorller().setScale(newScale, focusX, focusY, animate);
+		}
 	}
 	
 	/**
@@ -335,7 +355,9 @@ public class GuideView extends View implements SimpleGestureListener{
 	 * @param animate
 	 */
 	public void setScale(float newScale, boolean animate){
-		simpleGestureDetector.getScaleContorller().setScale(newScale, getRight() / 2, getBottom() / 2, animate);
+		if(isAllow()){
+			simpleGestureDetector.getScaleContorller().setScale(newScale, getRight() / 2, getBottom() / 2, animate);
+		}
 	}
 	
 	/**
@@ -344,23 +366,25 @@ public class GuideView extends View implements SimpleGestureListener{
 	 * @param y
 	 */
 	public void location(final Area area){
-		if(getWidth() > 0){
-			showSingleBubble(area);
-			setScale(1.0f, false);
-			int offsetWidth = 50;
-			if(getWidth() > area.getBubbleDrawable(getContext()).getIntrinsicWidth()){
-				offsetWidth = (getWidth() - area.getBubbleDrawable(getContext()).getIntrinsicWidth())/2;
-			}
-			int offsetHeight = (getHeight() - area.getBubbleDrawable(getContext()).getIntrinsicHeight())/2;
-			setTranslate(area.getBubbleDrawableShowPoint(getContext()).x- offsetWidth, area.getBubbleDrawableShowPoint(getContext()).y - offsetHeight);
-		}else{
-			getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
-				@Override
-				public void onGlobalLayout() {
-					location(area);
-					ViewUtils.removeOnGlobalLayoutListener(getViewTreeObserver(), this);
+		if(isAllow() && area != null){
+			if(getWidth() > 0){
+				showSingleBubble(area);
+				setScale(1.0f, false);
+				int offsetWidth = 50;
+				if(getWidth() > area.getBubbleDrawable(getContext()).getIntrinsicWidth()){
+					offsetWidth = (getWidth() - area.getBubbleDrawable(getContext()).getIntrinsicWidth())/2;
 				}
-			});
+				int offsetHeight = (getHeight() - area.getBubbleDrawable(getContext()).getIntrinsicHeight())/2;
+				setTranslate(area.getBubbleDrawableShowPoint(getContext()).x- offsetWidth, area.getBubbleDrawableShowPoint(getContext()).y - offsetHeight);
+			}else{
+				getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+					@Override
+					public void onGlobalLayout() {
+						location(area);
+						ViewUtils.removeOnGlobalLayoutListener(getViewTreeObserver(), this);
+					}
+				});
+			}
 		}
 	}
 	
@@ -422,5 +446,9 @@ public class GuideView extends View implements SimpleGestureListener{
 
 	public void setTextView(TextView textView) {
 		this.textView = textView;
+	}
+	
+	public boolean isAllow(){
+		return drawable != null && drawMatrix != null && simpleGestureDetector != null;
 	}
 }

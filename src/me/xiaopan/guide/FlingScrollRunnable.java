@@ -38,50 +38,48 @@ public class FlingScrollRunnable implements Runnable {
 	}
 	
 	public void fling(int viewWidth, int viewHeight, int velocityX, int velocityY){
-		final RectF rect = simpleGestureDetector.getGuideView().getDisplayRect();
-        if (null == rect) {
-            return;
-        }
-
-        final int startX = Math.round(-rect.left);
-        final int minX, maxX, minY, maxY;
-
-        if (viewWidth < rect.width()) {
-            minX = 0;
-            maxX = Math.round(rect.width() - viewWidth);
-        } else {
-            minX = maxX = startX;
-        }
-
-        final int startY = Math.round(-rect.top);
-        if (viewHeight < rect.height()) {
-            minY = 0;
-            maxY = Math.round(rect.height() - viewHeight);
-        } else {
-            minY = maxY = startY;
-        }
-
-        mCurrentX = startX;
-        mCurrentY = startY;
-
-        if (startX != maxX || startY != maxY) {
-        	mScroller.fling(startX, startY, velocityX, velocityY, minX, maxX, minY, maxY);
-        }
+		if(simpleGestureDetector.getGuideView().isAllow()){
+			final RectF rect = simpleGestureDetector.getGuideView().getDisplayRect();
+			if (null == rect) {
+				return;
+			}
+			
+			final int startX = Math.round(-rect.left);
+			final int minX, maxX, minY, maxY;
+			
+			if (viewWidth < rect.width()) {
+				minX = 0;
+				maxX = Math.round(rect.width() - viewWidth);
+			} else {
+				minX = maxX = startX;
+			}
+			
+			final int startY = Math.round(-rect.top);
+			if (viewHeight < rect.height()) {
+				minY = 0;
+				maxY = Math.round(rect.height() - viewHeight);
+			} else {
+				minY = maxY = startY;
+			}
+			
+			mCurrentX = startX;
+			mCurrentY = startY;
+			
+			if (startX != maxX || startY != maxY) {
+				mScroller.fling(startX, startY, velocityX, velocityY, minX, maxX, minY, maxY);
+			}
+		}
 	}
 	
 	@Override
 	public void run() {
-		if (mScroller.isFinished()) {	//如果已经完成了就结束
-            return;
-        }
-
-        if (mScroller.computeScrollOffset()) {
-            final int newX = mScroller.getCurrX();
-            final int newY = mScroller.getCurrY();
-            simpleGestureDetector.postTranslate(-(mCurrentX - newX), -(mCurrentY - newY));
-            mCurrentX = newX;
-            mCurrentY = newY;
-            simpleGestureDetector.getGuideView().postDelayed(this, SimpleGestureDetector.SIXTY_FPS_INTERVAL);
-        }
+		if(simpleGestureDetector.getGuideView().isAllow() && !mScroller.isFinished() && mScroller.computeScrollOffset()){
+			final int newX = mScroller.getCurrX();
+			final int newY = mScroller.getCurrY();
+			simpleGestureDetector.postTranslate(-(mCurrentX - newX), -(mCurrentY - newY));
+			mCurrentX = newX;
+			mCurrentY = newY;
+			simpleGestureDetector.getGuideView().postDelayed(this, SimpleGestureDetector.SIXTY_FPS_INTERVAL);
+		}
 	}
 }

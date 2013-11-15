@@ -42,17 +42,21 @@ public class SimpleGestureDetector extends SimpleOnGestureListener{
 	}
 	
 	public boolean onTouchEvent(MotionEvent motionEvent){
-		generalGestureDetector.onTouchEvent(motionEvent);
-		scaleContorller.onTouchEvent(motionEvent);
-		if(motionEvent.getAction() == MotionEvent.ACTION_CANCEL || motionEvent.getAction() == MotionEvent.ACTION_OUTSIDE || motionEvent.getAction() == MotionEvent.ACTION_UP){
-			if(scaleContorller.getCurrentScale() < scaleContorller.getToggleScales()[0]){
-				scaleContorller.setScale(scaleContorller.getToggleScales()[0], motionEvent.getX(), motionEvent.getY(), true);
+		if(guideView.isAllow()){
+			generalGestureDetector.onTouchEvent(motionEvent);
+			scaleContorller.onTouchEvent(motionEvent);
+			if(motionEvent.getAction() == MotionEvent.ACTION_CANCEL || motionEvent.getAction() == MotionEvent.ACTION_OUTSIDE || motionEvent.getAction() == MotionEvent.ACTION_UP){
+				if(scaleContorller.getCurrentScale() < scaleContorller.getToggleScales()[0]){
+					scaleContorller.setScale(scaleContorller.getToggleScales()[0], motionEvent.getX(), motionEvent.getY(), true);
+				}
+				if(simpleGestureListener != null){
+					simpleGestureListener.onUp(motionEvent);
+				}
 			}
-			if(simpleGestureListener != null){
-				simpleGestureListener.onUp(motionEvent);
-			}
+			return true;
+		}else{
+			return false;
 		}
-		return true;
 	}
 	
 	@Override
@@ -95,15 +99,19 @@ public class SimpleGestureDetector extends SimpleOnGestureListener{
 
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-		flingScrollRunnable = new FlingScrollRunnable(this);
-		flingScrollRunnable.fling(guideView.getAvailableWidth(), guideView.getAvailableHeight(), (int) velocityX, (int) velocityY);
-		guideView.post(flingScrollRunnable);
-		return true;
+		if(guideView.isAllow()){
+			flingScrollRunnable = new FlingScrollRunnable(this);
+			flingScrollRunnable.fling(guideView.getAvailableWidth(), guideView.getAvailableHeight(), (int) velocityX, (int) velocityY);
+			guideView.post(flingScrollRunnable);
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-		if(guideView.getDrawable() != null && guideView.getDrawMatrix() != null){
+		if(guideView.isAllow()){
 			postTranslate(-distanceX, -distanceY);
 			return true;
 		}else{
@@ -130,30 +138,32 @@ public class SimpleGestureDetector extends SimpleOnGestureListener{
 	 * 检查矩阵边界，防止滑动时超出边界
 	 */
     public void checkMatrixBounds(){
-		RectF rect = guideView.getDisplayRect();
-		final float height = rect.height(), width = rect.width();
-		float deltaX = 0, deltaY = 0;
-
-		final int viewHeight = guideView.getAvailableHeight();
-		if (height <= viewHeight) {
-			deltaY = (viewHeight - height) / 2 - rect.top;
-		} else if (rect.top > 0) {
-			deltaY = -rect.top;
-		} else if (rect.bottom < viewHeight) {
-			deltaY = viewHeight - rect.bottom;
-		}
-
-		final int viewWidth = guideView.getAvailableWidth();
-		if (width <= viewWidth) {
-			deltaX = (viewWidth - width) / 2 - rect.left;
-		} else if (rect.left > 0) {
-			deltaX = -rect.left;
-		} else if (rect.right < viewWidth) {
-			deltaX = viewWidth - rect.right;
-		} else {
-		}
-
-		guideView.getDrawMatrix().postTranslate(deltaX, deltaY);
+    	if(guideView.isAllow()){
+    		RectF rect = guideView.getDisplayRect();
+    		final float height = rect.height(), width = rect.width();
+    		float deltaX = 0, deltaY = 0;
+    		
+    		final int viewHeight = guideView.getAvailableHeight();
+    		if (height <= viewHeight) {
+    			deltaY = (viewHeight - height) / 2 - rect.top;
+    		} else if (rect.top > 0) {
+    			deltaY = -rect.top;
+    		} else if (rect.bottom < viewHeight) {
+    			deltaY = viewHeight - rect.bottom;
+    		}
+    		
+    		final int viewWidth = guideView.getAvailableWidth();
+    		if (width <= viewWidth) {
+    			deltaX = (viewWidth - width) / 2 - rect.left;
+    		} else if (rect.left > 0) {
+    			deltaX = -rect.left;
+    		} else if (rect.right < viewWidth) {
+    			deltaX = viewWidth - rect.right;
+    		} else {
+    		}
+    		
+    		guideView.getDrawMatrix().postTranslate(deltaX, deltaY);
+    	}
 	}
     
     /**
@@ -162,9 +172,11 @@ public class SimpleGestureDetector extends SimpleOnGestureListener{
      * @param dy
      */
     public void postTranslate(float dx, float dy){
-    	guideView.getDrawMatrix().postTranslate(dx, dy);
-        checkMatrixBounds();
-        guideView.invalidate();
+    	if(guideView.isAllow()){
+    		guideView.getDrawMatrix().postTranslate(dx, dy);
+    		checkMatrixBounds();
+    		guideView.invalidate();
+    	}
     }
     
     /**
@@ -173,9 +185,11 @@ public class SimpleGestureDetector extends SimpleOnGestureListener{
      * @param y
      */
     public void setTranslate(float x, float y){
-    	guideView.getDrawMatrix().setTranslate(x, y);
-        checkMatrixBounds();
-        guideView.invalidate();
+    	if(guideView.isAllow()){
+    		guideView.getDrawMatrix().setTranslate(x, y);
+    		checkMatrixBounds();
+    		guideView.invalidate();
+    	}
     }
 	
 	public interface SimpleGestureListener{
