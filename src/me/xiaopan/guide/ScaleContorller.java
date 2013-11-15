@@ -98,20 +98,16 @@ public class ScaleContorller implements ScaleGestureDetector.OnScaleGestureListe
 					toggleScales[1] = 2.0f;
 					toggleScales[2] = 3.0f;
 				}
-			}else{
-				toggleScales[0] = 1.0f;
-				toggleScales[1] = 2.0f;
-				toggleScales[2] = 3.0f;
-			}
-			if(first){
-				if(simpleGestureDetector.getGuideView().getInitialZoomMode() == InitialZoomMode.MIN){
-					setScale(toggleScales[0], 0, 0, false);
-				}else if(simpleGestureDetector.getGuideView().getInitialZoomMode() == InitialZoomMode.DEFAULT){
-					setScale(1.0f, 0, 0, false);
-				}else if(simpleGestureDetector.getGuideView().getInitialZoomMode() == InitialZoomMode.MAX){
-					setScale(toggleScales[toggleScales.length - 1], 0, 0, false);
+				if(first){
+					if(simpleGestureDetector.getGuideView().getInitialZoomMode() == InitialZoomMode.MIN){
+						setScale(toggleScales[0], 0, 0, false);
+					}else if(simpleGestureDetector.getGuideView().getInitialZoomMode() == InitialZoomMode.DEFAULT){
+						setScale(1.0f, 0, 0, false);
+					}else if(simpleGestureDetector.getGuideView().getInitialZoomMode() == InitialZoomMode.MAX){
+						setScale(toggleScales[toggleScales.length - 1], 0, 0, false);
+					}
+					first = false;
 				}
-				first = false;
 			}
 		}
 	}

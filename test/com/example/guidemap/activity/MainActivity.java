@@ -27,7 +27,7 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		guideMapView = (GuideView) findViewById(R.id.guideMap);
 		final List<Area> booths = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(AssetsUtils.getString(getBaseContext(), "booths.txt"), new TypeToken<List<Booth>>(){}.getType());
-		booths.add(new ZhanGuan(new PointF(500, 500), new PointF(0, 1000), new PointF(1000, 1000)));
+//		booths.add(new ZhanGuan(new PointF(500, 500), new PointF(0, 1000), new PointF(1000, 1000)));
 		guideMapView.setMap(AssetsUtils.getBitmap(getBaseContext(), "44.png"), booths);
 		guideMapView.setListener(new Listener() {
 			@Override
@@ -46,7 +46,7 @@ public class MainActivity extends Activity {
 				}
 			}
 		});
-		guideMapView.location(booths.get(20));
+//		guideMapView.location(booths.get(20));
 		guideMapView.setTextView((TextView) findViewById(R.id.text));
 	}
 }
