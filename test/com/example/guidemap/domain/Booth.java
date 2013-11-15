@@ -1,6 +1,7 @@
 package com.example.guidemap.domain;
 
 import android.content.Context;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 
 import me.xiaopan.guide.R;
@@ -14,6 +15,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Booth extends RectArea{
 	public static Drawable baseBubbleDrawable;
+	private RectF rect;
 	
 	@Expose
 	@SerializedName("bthId")
@@ -89,7 +91,6 @@ public class Booth extends RectArea{
 	 * 获取左外边距
 	 * @return 左外边距
 	 */ 
-	@Override
 	public int getLeft() {
 		return left;
 	}
@@ -106,7 +107,6 @@ public class Booth extends RectArea{
 	 * 获取左外边距
 	 * @return 顶外边距
 	 */
-	@Override
 	public int getTop() {
 		return top;
 	}
@@ -123,7 +123,6 @@ public class Booth extends RectArea{
 	 * 获取右外边距
 	 * @return 右外边距
 	 */
-	@Override
 	public int getRight() {
 		return left + width;
 	}
@@ -132,7 +131,6 @@ public class Booth extends RectArea{
 	 * 获取底外边距
 	 * @return 底外边距
 	 */
-	@Override
 	public int getBottom() {
 		return top + height;
 	}
@@ -206,5 +204,13 @@ public class Booth extends RectArea{
 			baseBubbleDrawable = context.getResources().getDrawable(R.raw.bubble);
 		}
 		return baseBubbleDrawable;
+	}
+
+	@Override
+	public RectF getRect() {
+		if(rect == null){
+			rect = new RectF(getLeft(), getTop(), getRight(), getBottom());
+		}
+		return rect;
 	}
 }

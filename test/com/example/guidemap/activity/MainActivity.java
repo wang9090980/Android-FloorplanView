@@ -4,17 +4,18 @@ import java.util.List;
 
 import me.xiaopan.easy.android.util.AssetsUtils;
 import me.xiaopan.easy.android.util.ToastUtils;
+import me.xiaopan.guide.Area;
+import me.xiaopan.guide.GuideView;
+import me.xiaopan.guide.GuideView.InitialZoomMode;
+import me.xiaopan.guide.GuideView.Listener;
+import me.xiaopan.guide.R;
 import android.app.Activity;
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import me.xiaopan.guide.Area;
-import me.xiaopan.guide.GuideView;
-import me.xiaopan.guide.R;
-import me.xiaopan.guide.GuideView.InitialZoomMode;
-import me.xiaopan.guide.GuideView.Listener;
-
 import com.example.guidemap.domain.Booth;
+import com.example.guidemap.domain.ZhanGuan;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
@@ -27,6 +28,7 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		guideMapView = (GuideView) findViewById(R.id.guideMap);
 		final List<Area> booths = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(AssetsUtils.getString(getBaseContext(), "booths.txt"), new TypeToken<List<Booth>>(){}.getType());
+		booths.add(new ZhanGuan(new PointF(500, 500), new PointF(0, 1000), new PointF(1000, 1000)));
 		guideMapView.setMap(AssetsUtils.getBitmap(getBaseContext(), "44.png"), booths);
 		guideMapView.setInitialZoomMode(InitialZoomMode.MIN);
 		guideMapView.setListener(new Listener() {
@@ -37,8 +39,12 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void onClickAreaBubble(Area area) {
-				if(area != null && area instanceof Booth){
-					ToastUtils.toastS(getBaseContext(), ((Booth) area).getCompany().getAtrName());
+				if(area != null){
+					if(area instanceof Booth){
+						ToastUtils.toastS(getBaseContext(), ((Booth) area).getCompany().getAtrName());
+					}else if(area instanceof ZhanGuan){
+						ToastUtils.toastS(getBaseContext(), ((ZhanGuan) area).getTitle());
+					}
 				}
 			}
 		});

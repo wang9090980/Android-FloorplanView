@@ -18,14 +18,13 @@ package me.xiaopan.guide;
 
 import android.graphics.RectF;
 import android.view.GestureDetector;
-import android.view.GestureDetector.OnDoubleTapListener;
-import android.view.GestureDetector.OnGestureListener;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 
 /**
  * 综合手势识别器
  */
-public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapListener{
+public class SimpleGestureDetector extends SimpleOnGestureListener{
 	public static final int ZOOM_DURATION = 200;
 	public static final int SIXTY_FPS_INTERVAL = 1000 / 60;
 	private GuideView guideView;
@@ -38,6 +37,7 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 		this.guideView = guideView;
 		this.simpleGestureListener = simpleGestureListener;
 		generalGestureDetector = new GestureDetector(guideView.getContext(), this);
+		generalGestureDetector.setOnDoubleTapListener(this);
 		scaleContorller = new ScaleContorller(this);
 	}
 	
@@ -69,7 +69,12 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 
 	@Override
 	public boolean onSingleTapUp(MotionEvent e) {
-		return true;
+		if(simpleGestureListener != null){
+			simpleGestureListener.onSingleTapUp(e);
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	@Override
@@ -118,12 +123,7 @@ public class SimpleGestureDetector implements OnGestureListener, OnDoubleTapList
 
 	@Override
 	public boolean onSingleTapConfirmed(MotionEvent e) {
-		if(simpleGestureListener != null){
-			simpleGestureListener.onSingleTapUp(e);
-			return true;
-		}else{
-			return false;
-		}
+		return true;
 	}
 	
 	/**

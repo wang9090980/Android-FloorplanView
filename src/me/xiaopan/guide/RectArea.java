@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
@@ -22,28 +23,10 @@ public abstract class RectArea implements Area{
 	private boolean isClickedArea;
 	
 	/**
-	 * 获取左外边距
-	 * @return 左外边距
-	 */ 
-	public abstract int getLeft();
-	
-	/**
-	 * 获取左外边距
-	 * @return 顶外边距
+	 * 获取坐标
+	 * @return
 	 */
-	public abstract int getTop();
-
-	/**
-	 * 获取右外边距
-	 * @return 右外边距
-	 */
-	public abstract int getRight();
-
-	/**
-	 * 获取底外边距
-	 * @return 底外边距
-	 */
-	public abstract int getBottom();
+	public abstract RectF getRect();
 	
 	/**
 	 * 获取标题
@@ -61,7 +44,9 @@ public abstract class RectArea implements Area{
 	 * 获取气泡X轴偏移
 	 * @return
 	 */
-	public abstract int getBubbleXOffset();
+	public int getBubbleXOffset(){
+		return 0;
+	}
 	
 	/**
 	 * 获取标题和副标题之前的垂直间距
@@ -160,7 +145,7 @@ public abstract class RectArea implements Area{
 	public void drawArea(Canvas canvas, Paint paint){
 		canvas.save();
 		paint.setColor(getAreaColor());
-		canvas.drawRect(getLeft(), getTop(), getRight(), getBottom(), paint);
+		canvas.drawRect(getRect(), paint);
 		canvas.restore();
 	}
 
@@ -179,28 +164,32 @@ public abstract class RectArea implements Area{
 		
 		canvas.save();
 		if(isShowBubble()){
-			if(!isClickedArea()){
-				canvas.translate(getBubbleDrawableShowPoint(context).x, getBubbleDrawableShowPoint(context).y);
+			if(!isClickedArea() && bubbleDrawableShowPoint != null && bubbleDrawable != null){
+				canvas.translate(bubbleDrawableShowPoint.x, bubbleDrawableShowPoint.y);
 				canvas.drawRect(0, 0, bubbleDrawable.getIntrinsicWidth(), bubbleDrawable.getIntrinsicHeight() - (getVoidHeight() * getScale(context)), paint);
 			}
 		}else{
-			canvas.drawRect(getLeft(), getTop(), getRight(), getBottom(), paint);
+			canvas.drawRect(getRect(), paint);
 		}
 		canvas.restore();
 	}
 	
-	public float getScale(Context context){
+	private float getScale(Context context){
 		return (float) getBaseBubbleDrawable(context).getIntrinsicWidth()/getBubbleDrawableOriginalWidth();
 	}
 	
 	@Override
 	public boolean isClickArea(float x, float y){
-		return x >= getLeft() && x <= getRight() && y >= getTop() && y <= getBottom();
+		return x >= getRect().left && x <= getRect().right && y >= getRect().top && y <= getRect().bottom;
 	}
 
 	@Override
 	public boolean isClickBubble(Context context, float x, float y) {
-		return x >= bubbleDrawableShowPoint.x && x <= (bubbleDrawableShowPoint.x +bubbleDrawable.getIntrinsicWidth()) && y >= bubbleDrawableShowPoint.y && y <= (bubbleDrawableShowPoint.y +(bubbleDrawable.getIntrinsicHeight() - (getVoidHeight() * getScale(context))));
+		if(bubbleDrawableShowPoint != null && bubbleDrawable != null){
+			return x >= bubbleDrawableShowPoint.x && x <= (bubbleDrawableShowPoint.x +bubbleDrawable.getIntrinsicWidth()) && y >= bubbleDrawableShowPoint.y && y <= (bubbleDrawableShowPoint.y +(bubbleDrawable.getIntrinsicHeight() - (getVoidHeight() * getScale(context))));
+		}else{
+			return false;
+		}
 	}
 
 	@Override
@@ -226,16 +215,14 @@ public abstract class RectArea implements Area{
 	@Override
 	public PointF getBubbleDrawableShowPoint(Context context) {
 		if(bubbleDrawableShowPoint == null){
-			float x = (getLeft() + getRight())/2;
-			float y = (getTop() + getBottom())/2;
-			x = (getLeft() + x)/2;
-			y = (getTop() + y)/2;
+			bubbleDrawableShowPoint = new PointF((getRect().left + getRect().right)/2, (getRect().top + getRect().bottom)/2);
+			bubbleDrawableShowPoint.x = (getRect().left + bubbleDrawableShowPoint.x)/2;
+			bubbleDrawableShowPoint.y = (getRect().top + bubbleDrawableShowPoint.y)/2;
 			if(bubbleDrawable == null){
 				getBubbleDrawable(context);
 			}
-			x -= getBubbleXOffset() * getScale(context);
-			y -= bubbleDrawable.getIntrinsicHeight();
-			bubbleDrawableShowPoint = new PointF(x, y);
+			bubbleDrawableShowPoint.x -= getBubbleXOffset() * getScale(context);
+			bubbleDrawableShowPoint.y -= bubbleDrawable.getIntrinsicHeight();
 		}
 		return bubbleDrawableShowPoint;
 	} 

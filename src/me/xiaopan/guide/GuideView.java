@@ -3,7 +3,6 @@ package me.xiaopan.guide;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.xiaopan.easy.android.util.AndroidLogger;
 import me.xiaopan.easy.android.util.ViewUtils;
 import me.xiaopan.guide.SimpleGestureDetector.SimpleGestureListener;
 import android.content.Context;
@@ -159,7 +158,6 @@ public class GuideView extends View implements SimpleGestureListener{
 			}
 			
 			/* 尝试扩大显示区域以便显示出超出的部分 */
-			AndroidLogger.e(offsetRect.toString());
 			displayRect.left += offsetRect.left;
 			displayRect.top += offsetRect.top;
 			if(offsetRect.right > displayRect.width()){
