@@ -28,6 +28,7 @@ public class GuideView extends View implements SimpleGestureListener{
 	private Matrix drawMatrix;
 	private Listener listener;
 	private Drawable drawable;
+	private Bitmap bitmap;
 	private List<Area> areas;
 	private List<Area> bubbleAreas;
 	private InitialZoomMode initialZoomMode;
@@ -110,6 +111,10 @@ public class GuideView extends View implements SimpleGestureListener{
 	 */
 	public void setMap(Bitmap mapBitmap, List<Area> newAreas) {
 		//释放旧的图片
+		if(bitmap != null && !bitmap.isRecycled()){
+			bitmap.recycle();
+			bitmap = null;
+		}
 		if(drawable != null){
 			drawable.setCallback(null);
 			unscheduleDrawable(drawable);
@@ -127,7 +132,8 @@ public class GuideView extends View implements SimpleGestureListener{
 		
 		if(mapBitmap != null && newAreas != null && newAreas.size() > 0){
 			this.areas = newAreas;
-			drawable = new BitmapDrawable(getResources(), mapBitmap);
+			this.bitmap = mapBitmap;
+			drawable = new BitmapDrawable(getResources(), bitmap);
 			drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
 			drawMatrix = new Matrix();
 			simpleGestureDetector = new SimpleGestureDetector(this, this);
@@ -261,6 +267,10 @@ public class GuideView extends View implements SimpleGestureListener{
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
+		if(bitmap != null && !bitmap.isRecycled()){
+			bitmap.recycle();
+			bitmap = null;
+		}
 		if(drawable != null){
 			drawable.setCallback(null);
 			unscheduleDrawable(drawable);
