@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 /**
  * 地图上的区域
@@ -71,8 +72,9 @@ public interface Area {
 	/**
 	 * 设置是否显示气泡
 	 * @param isShowBubble
+	 * @param view
 	 */
-	public void setShowBubble(boolean isShowBubble);
+	public void setShowBubble(boolean isShowBubble, View view);
 	
 	/**
 	 * 设置点击的是否是矩形区域

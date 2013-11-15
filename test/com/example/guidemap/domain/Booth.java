@@ -1,11 +1,10 @@
 package com.example.guidemap.domain;
 
+import me.xiaopan.guide.R;
+import me.xiaopan.guide.RectArea;
 import android.content.Context;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-
-import me.xiaopan.guide.R;
-import me.xiaopan.guide.RectArea;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -14,7 +13,6 @@ import com.google.gson.annotations.SerializedName;
  * 展位
  */
 public class Booth extends RectArea{
-	public static Drawable baseBubbleDrawable;
 	private RectF rect;
 	
 	@Expose
@@ -200,10 +198,7 @@ public class Booth extends RectArea{
 
 	@Override
 	public Drawable getBaseBubbleDrawable(Context context) {
-		if(baseBubbleDrawable == null){
-			baseBubbleDrawable = context.getResources().getDrawable(R.raw.bubble);
-		}
-		return baseBubbleDrawable;
+		return context.getResources().getDrawable(R.raw.bubble);
 	}
 
 	@Override

@@ -7,7 +7,6 @@ import me.xiaopan.easy.android.util.ViewUtils;
 import me.xiaopan.guide.SimpleGestureDetector.SimpleGestureListener;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -36,6 +35,7 @@ public class GuideView extends View implements SimpleGestureListener{
 	private Area currentDownArea;
 	private TextView textView;
 	private RectF offsetRect;
+	Paint rectPaint = new Paint();
 
 	public GuideView(Context context) {
 		super(context);
@@ -73,6 +73,9 @@ public class GuideView extends View implements SimpleGestureListener{
 				canvas.concat(drawMatrix);
 			}
 			drawable.draw(canvas);	//绘制底图
+			for(Area area : areas){
+				area.drawArea(canvas, rectPaint);
+			}
 			offsetRect.set(0, 0, 0, 0);
 			if(bubbleAreas != null && bubbleAreas.size() > 0){	//绘制气泡
 				for(Area area : bubbleAreas){
@@ -124,16 +127,7 @@ public class GuideView extends View implements SimpleGestureListener{
 		
 		if(mapBitmap != null && newAreas != null && newAreas.size() > 0){
 			this.areas = newAreas;
-			
-			/* 绘制新的图片 */
-			Bitmap showBitmap = mapBitmap.copy(Config.ARGB_8888, true);
-			mapBitmap.recycle();
-			Canvas canvas = new Canvas(showBitmap);
-			Paint rectPaint = new Paint();
-			for(Area area : areas){
-				area.drawArea(canvas, rectPaint);
-			}
-			drawable = new BitmapDrawable(getResources(), showBitmap);
+			drawable = new BitmapDrawable(getResources(), mapBitmap);
 			drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
 			drawMatrix = new Matrix();
 			simpleGestureDetector = new SimpleGestureDetector(this, this);
@@ -164,7 +158,7 @@ public class GuideView extends View implements SimpleGestureListener{
      */
     public final RectF getDisplayRect() {
     	if (isAllow()) {
-			displayRect.set(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+			displayRect.set(drawable.getBounds());
 			drawMatrix.mapRect(displayRect);
 			if(textView != null){
 				textView.setText(displayRect.toString());
@@ -282,7 +276,7 @@ public class GuideView extends View implements SimpleGestureListener{
 			if(bubbleAreas == null){
 				bubbleAreas = new ArrayList<Area>();
 			}
-			newArea.setShowBubble(true);
+			newArea.setShowBubble(true, this);
 			bubbleAreas.add(newArea);
 			offsetRect.set(0, 0, 0, 0);
 			checkOffset(newArea);
@@ -302,7 +296,7 @@ public class GuideView extends View implements SimpleGestureListener{
 			}else{
 				clearAllBubble();
 			}
-			newArea.setShowBubble(true);
+			newArea.setShowBubble(true, this);
 			bubbleAreas.add(newArea);
 			offsetRect.set(0, 0, 0, 0);
 			checkOffset(newArea);
@@ -317,7 +311,7 @@ public class GuideView extends View implements SimpleGestureListener{
 	public void clearAllBubble(){
 		if(isAllow() && bubbleAreas != null && bubbleAreas.size() > 0){
 			for(Area bubbleArea : bubbleAreas){
-				bubbleArea.setShowBubble(false);
+				bubbleArea.setShowBubble(false, this);
 			}
 			bubbleAreas.clear();
 		}

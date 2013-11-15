@@ -1,10 +1,10 @@
 package com.example.guidemap.domain;
 
+import me.xiaopan.guide.PathArea;
+import me.xiaopan.guide.R;
 import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
-import me.xiaopan.guide.PathArea;
-import me.xiaopan.guide.R;
 
 public class ZhanGuan extends PathArea {
 
@@ -26,10 +26,7 @@ public class ZhanGuan extends PathArea {
 
 	@Override
 	public Drawable getBaseBubbleDrawable(Context context) {
-		if(Booth.baseBubbleDrawable == null){
-			Booth.baseBubbleDrawable = context.getResources().getDrawable(R.raw.bubble);
-		}
-		return Booth.baseBubbleDrawable;
+		return context.getResources().getDrawable(R.raw.bubble);
 	}
 
 	@Override

@@ -5,14 +5,15 @@ import me.xiaopan.easy.android.util.TextUtils;
 import me.xiaopan.easy.java.util.StringUtils;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import android.graphics.Bitmap.Config;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 /**
  * 路径区域，用来显示多边形
@@ -217,7 +218,7 @@ public abstract class PathArea implements Area{
 	}
 
 	@Override
-	public void setShowBubble(boolean isShowBubble) {
+	public void setShowBubble(boolean isShowBubble, View view) {
 		this.isShowBubble = isShowBubble;
 	}
 	

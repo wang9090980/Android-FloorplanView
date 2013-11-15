@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 /**
  * 矩形区域
@@ -180,7 +181,7 @@ public abstract class RectArea implements Area{
 	
 	@Override
 	public boolean isClickArea(float x, float y){
-		return x >= getRect().left && x <= getRect().right && y >= getRect().top && y <= getRect().bottom;
+		return getRect().contains(x, y);
 	}
 
 	@Override
@@ -198,8 +199,13 @@ public abstract class RectArea implements Area{
 	}
 
 	@Override
-	public void setShowBubble(boolean isShowBubble) {
+	public void setShowBubble(boolean isShowBubble, View view) {
 		this.isShowBubble = isShowBubble;
+		if(!isShowBubble && bubbleDrawable != null){
+			bubbleDrawable.setCallback(null);
+			view.unscheduleDrawable(bubbleDrawable);
+			bubbleDrawable = null;
+		}
 	}
 	
 	@Override

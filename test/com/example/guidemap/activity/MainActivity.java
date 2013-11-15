@@ -6,7 +6,6 @@ import me.xiaopan.easy.android.util.AssetsUtils;
 import me.xiaopan.easy.android.util.ToastUtils;
 import me.xiaopan.guide.Area;
 import me.xiaopan.guide.GuideView;
-import me.xiaopan.guide.GuideView.InitialZoomMode;
 import me.xiaopan.guide.GuideView.Listener;
 import me.xiaopan.guide.R;
 import android.app.Activity;
