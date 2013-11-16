@@ -22,6 +22,7 @@ public abstract class RectArea implements Area{
 	protected Drawable bubbleDrawable;
 	private boolean isShowBubble;
 	private boolean isClickedArea;
+	private int baseBubbleDrawableWidth;
 	
 	/**
 	 * 获取坐标
@@ -176,7 +177,7 @@ public abstract class RectArea implements Area{
 	}
 	
 	private float getScale(Context context){
-		return (float) getBaseBubbleDrawable(context).getBounds().width()/getBubbleDrawableOriginalWidth();
+		return (float) baseBubbleDrawableWidth/getBubbleDrawableOriginalWidth();
 	}
 	
 	@Override
@@ -258,11 +259,12 @@ public abstract class RectArea implements Area{
 			int finalNeedWidth = titleNeedWidth>subTitleNeedWidth?titleNeedWidth:subTitleNeedWidth;
 			int finalNeedHeight = titleNeedHeight + getIntervalOfHeight() + subTitleNeedHeight;
 			Drawable backgDrawable = getBaseBubbleDrawable(context);
+			baseBubbleDrawableWidth = backgDrawable.getIntrinsicWidth();
 			Rect paddingRect = new Rect();
 			backgDrawable.getPadding(paddingRect);
 			finalNeedWidth += paddingRect.left + paddingRect.right;
 			finalNeedHeight += paddingRect.top + paddingRect.bottom;
-			backgDrawable.setBounds(0, 0, backgDrawable.getMinimumWidth()>finalNeedWidth?backgDrawable.getMinimumWidth():finalNeedWidth, backgDrawable.getMinimumHeight()>finalNeedHeight?backgDrawable.getMinimumHeight():finalNeedHeight);
+			backgDrawable.setBounds(0, 0, backgDrawable.getIntrinsicWidth()>finalNeedWidth?backgDrawable.getIntrinsicWidth():finalNeedWidth, backgDrawable.getIntrinsicHeight()>finalNeedHeight?backgDrawable.getIntrinsicHeight():finalNeedHeight);
 			
 			/* 创建新的气泡图片 */
 			Bitmap bitmap = Bitmap.createBitmap(backgDrawable.getBounds().width(), backgDrawable.getBounds().height(), Config.ARGB_8888);
