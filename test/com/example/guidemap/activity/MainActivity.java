@@ -29,7 +29,7 @@ public class MainActivity extends Activity {
 		guideMapView = (GuideView) findViewById(R.id.guideMap);
 		final List<Area> booths = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(AssetsUtils.getString(getBaseContext(), "booths.txt"), new TypeToken<List<Booth>>(){}.getType());
 //		booths.add(new ZhanGuan(new PointF(500, 500), new PointF(0, 1000), new PointF(1000, 1000)));
-		Options options = BitmapDecoder.decodeSizeFromAssest(getBaseContext(), "44.png");
+		Options options = BitmapDecoder.decodeSizeFromAssets(getBaseContext(), "44.png");
 		guideMapView.setMap(AssetsUtils.getBitmap(getBaseContext(), "44.png"), booths, options.outWidth, options.outHeight);
 		guideMapView.setListener(new Listener() {
 			@Override
