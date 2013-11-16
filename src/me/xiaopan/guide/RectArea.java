@@ -236,38 +236,48 @@ public abstract class RectArea implements Area{
 	@Override
 	public Drawable getBubbleDrawable(Context context) {
 		if(bubbleDrawable == null){
-			Paint titlePaint = new Paint();
-			titlePaint.setTextSize(getTilteTextSize());
-			titlePaint.setColor(getTitleTextColor());
+			Paint paint = new Paint();
+			paint.setAntiAlias(true);//去除锯齿
+			paint.setFilterBitmap(true);//对文字进行滤波处理，增强绘制效果
+			
+			/* 测量标题需要的宽和高 */
+			paint.setTextSize(getTilteTextSize());
+			paint.setColor(getTitleTextColor());
 			String title = StringUtils.checkLength(getTitle(), getTilteMaxLength());
-			int titleNeedWidth = (int) TextUtils.getTextWidth(titlePaint, title);
-			int titleNeedHeight = TextUtils.getTextHeightByBounds(title, titlePaint.getTextSize());
+			int titleNeedWidth = (int) TextUtils.getTextWidth(paint, title);
+			int titleNeedHeight = TextUtils.getTextHeightByBounds(title, paint.getTextSize());
 			
-			Paint subTitlePaint = new Paint();
-			subTitlePaint.setTextSize(getSubTilteTextSize());
-			subTitlePaint.setColor(getSubTitleTextColor());
+			/* 测量副标题需要的宽和高 */
+			paint.setTextSize(getSubTilteTextSize());
+			paint.setColor(getSubTitleTextColor());
 			String subTitle = StringUtils.checkLength(getSubTitle(), getSubTilteMaxLength());
-			int subTitleNeedWidth = (int) TextUtils.getTextWidth(subTitlePaint, subTitle);
-			int subTitleNeedHeight = TextUtils.getTextHeightByBounds(subTitle, subTitlePaint.getTextSize());
+			int subTitleNeedWidth = (int) TextUtils.getTextWidth(paint, subTitle);
+			int subTitleNeedHeight = TextUtils.getTextHeightByBounds(subTitle, paint.getTextSize());
 			
+			/* 计算最终气泡需要的宽高 */
 			int finalNeedWidth = titleNeedWidth>subTitleNeedWidth?titleNeedWidth:subTitleNeedWidth;
 			int finalNeedHeight = titleNeedHeight + getIntervalOfHeight() + subTitleNeedHeight;
-			
 			Drawable backgDrawable = getBaseBubbleDrawable(context);
 			Rect paddingRect = new Rect();
 			backgDrawable.getPadding(paddingRect);
-			
 			finalNeedWidth += paddingRect.left + paddingRect.right;
 			finalNeedHeight += paddingRect.top + paddingRect.bottom;
-			
 			backgDrawable.setBounds(0, 0, backgDrawable.getMinimumWidth()>finalNeedWidth?backgDrawable.getMinimumWidth():finalNeedWidth, backgDrawable.getMinimumHeight()>finalNeedHeight?backgDrawable.getMinimumHeight():finalNeedHeight);
 			
+			/* 创建新的气泡图片 */
 			Bitmap bitmap = Bitmap.createBitmap(backgDrawable.getBounds().width(), backgDrawable.getBounds().height(), Config.ARGB_8888);
 			Canvas canvas = new Canvas(bitmap);
 			backgDrawable.draw(canvas);
 			
-			canvas.drawText(title, paddingRect.left, paddingRect.top + TextUtils.getTextLeading(titlePaint), titlePaint);
-			canvas.drawText(subTitle, paddingRect.left, paddingRect.top + TextUtils.getTextLeading(subTitlePaint) + getIntervalOfHeight() + titleNeedHeight, subTitlePaint);
+			/* 在新的气泡图片上绘制标题 */
+			paint.setTextSize(getTilteTextSize());
+			paint.setColor(getTitleTextColor());
+			canvas.drawText(title, paddingRect.left, paddingRect.top + TextUtils.getTextLeading(paint), paint);
+
+			/* 在新的气泡图片上绘制副标题 */
+			paint.setTextSize(getSubTilteTextSize());
+			paint.setColor(getSubTitleTextColor());
+			canvas.drawText(subTitle, backgDrawable.getBounds().width() - paddingRect.right - subTitleNeedWidth, paddingRect.top + TextUtils.getTextLeading(paint) + getIntervalOfHeight() + titleNeedHeight, paint);
 			
 			bubbleDrawable = new BitmapDrawable(context.getResources(), bitmap);
 			bubbleDrawable.setBounds(0, 0, bubbleDrawable.getIntrinsicWidth(), bubbleDrawable.getMinimumHeight());

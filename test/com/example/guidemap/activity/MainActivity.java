@@ -9,7 +9,6 @@ import me.xiaopan.guide.GuideView;
 import me.xiaopan.guide.GuideView.Listener;
 import me.xiaopan.guide.R;
 import android.app.Activity;
-import android.graphics.PointF;
 import android.os.Bundle;
 import android.widget.TextView;
 
