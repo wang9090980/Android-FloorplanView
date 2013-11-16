@@ -88,8 +88,8 @@ public class ScaleContorller implements ScaleGestureDetector.OnScaleGestureListe
 	public void init(){
 		if(simpleGestureDetector.getGuideView().isAllow()){
 			if(simpleGestureDetector.getGuideView().getWidth() > 0 && simpleGestureDetector.getGuideView().getHeight() > 0){
-				float widthScale = (float) simpleGestureDetector.getGuideView().getWidth()/(float) simpleGestureDetector.getGuideView().getDrawable().getIntrinsicWidth();
-				float heightScale = (float) simpleGestureDetector.getGuideView().getHeight()/(float) simpleGestureDetector.getGuideView().getDrawable().getIntrinsicHeight();
+				float widthScale = (float) simpleGestureDetector.getGuideView().getWidth()/(float) simpleGestureDetector.getGuideView().getDrawable().getBounds().width();
+				float heightScale = (float) simpleGestureDetector.getGuideView().getHeight()/(float) simpleGestureDetector.getGuideView().getDrawable().getBounds().height();
 				toggleScales[0] = widthScale < heightScale?(widthScale<1.0f?widthScale:1.0f):(heightScale<1.0f?heightScale:1.0f);
 				if(toggleScales[0] < 1.0f){
 					toggleScales[1] = 1.0f;

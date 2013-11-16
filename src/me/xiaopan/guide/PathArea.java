@@ -177,7 +177,7 @@ public abstract class PathArea implements Area{
 		if(isShowBubble()){
 			if(!isClickedArea() && bubbleDrawableShowPoint != null && bubbleDrawable != null){
 				canvas.translate(bubbleDrawableShowPoint.x, bubbleDrawableShowPoint.y);
-				canvas.drawRect(0, 0, bubbleDrawable.getIntrinsicWidth(), bubbleDrawable.getIntrinsicHeight() - (getVoidHeight() * getScale(context)), paint);
+				canvas.drawRect(0, 0, bubbleDrawable.getBounds().width(), bubbleDrawable.getBounds().height() - (getVoidHeight() * getScale(context)), paint);
 			}
 		}else{
 			PointF[] coordinates = getCoordinates();
@@ -195,7 +195,7 @@ public abstract class PathArea implements Area{
 	}
 	
 	private float getScale(Context context){
-		return (float) getBaseBubbleDrawable(context).getIntrinsicWidth()/getBubbleDrawableOriginalWidth();
+		return (float) getBaseBubbleDrawable(context).getBounds().width()/getBubbleDrawableOriginalWidth();
 	}
 	
 	@Override
@@ -206,7 +206,7 @@ public abstract class PathArea implements Area{
 	@Override
 	public boolean isClickBubble(Context context, float x, float y) {
 		if(bubbleDrawableShowPoint != null && bubbleDrawable != null){
-			return x >= bubbleDrawableShowPoint.x && x <= (bubbleDrawableShowPoint.x +bubbleDrawable.getIntrinsicWidth()) && y >= bubbleDrawableShowPoint.y && y <= (bubbleDrawableShowPoint.y +(bubbleDrawable.getIntrinsicHeight() - (getVoidHeight() * getScale(context))));
+			return x >= bubbleDrawableShowPoint.x && x <= (bubbleDrawableShowPoint.x +bubbleDrawable.getBounds().width()) && y >= bubbleDrawableShowPoint.y && y <= (bubbleDrawableShowPoint.y +(bubbleDrawable.getBounds().height() - (getVoidHeight() * getScale(context))));
 		}else{
 			return false;
 		}
@@ -240,7 +240,7 @@ public abstract class PathArea implements Area{
 				getBubbleDrawable(context);
 			}
 			bubbleDrawableShowPoint.x -= getBubbleXOffset() * getScale(context);
-			bubbleDrawableShowPoint.y -= bubbleDrawable.getIntrinsicHeight();
+			bubbleDrawableShowPoint.y -= bubbleDrawable.getBounds().height();
 		}
 		return bubbleDrawableShowPoint;
 	}
