@@ -197,10 +197,14 @@ public class GuideView extends View implements SimpleGestureListener{
 		if(isAllow() && currentDownArea != null){
 			if(currentDownArea.isShowBubble()){
 				if(!currentDownArea.isClickedArea()){
-					listener.onClickAreaBubble(currentDownArea);
+					if(listener != null){
+						listener.onClickAreaBubble(currentDownArea);
+					}
 				}
 			}else{
-				listener.onClickArea(currentDownArea);
+				if(listener != null){
+					listener.onClickArea(currentDownArea);
+				}
 			}
 		}
 	}
