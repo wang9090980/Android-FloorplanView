@@ -77,6 +77,9 @@ public class GuideView extends View implements SimpleGestureListener{
 			for(Area area : areas){
 				area.drawArea(canvas, rectPaint);
 			}
+			if(currentDownArea != null && !(currentDownArea.isShowBubble() && !currentDownArea.isClickedArea())){	//绘制按下状态
+				currentDownArea.drawPressed(getContext(), canvas);
+			}
 			offsetRect.set(0, 0, 0, 0);
 			if(bubbleAreas != null && bubbleAreas.size() > 0){	//绘制气泡
 				for(Area area : bubbleAreas){
@@ -86,7 +89,7 @@ public class GuideView extends View implements SimpleGestureListener{
 					}
 				}
 			}
-			if(currentDownArea != null){	//绘制按下状态
+			if(currentDownArea != null && currentDownArea.isShowBubble() && !currentDownArea.isClickedArea()){	//绘制按下状态
 				currentDownArea.drawPressed(getContext(), canvas);
 			}
 		}
