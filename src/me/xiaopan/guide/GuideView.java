@@ -3,6 +3,7 @@ package me.xiaopan.guide;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.xiaopan.easy.android.util.AndroidLogger;
 import me.xiaopan.easy.android.util.ViewUtils;
 import me.xiaopan.guide.SimpleGestureDetector.SimpleGestureListener;
 import android.content.Context;
@@ -329,9 +330,9 @@ public class GuideView extends View implements SimpleGestureListener{
 			offsetRect.set(0, 0, 0, 0);
 			checkOffset(newArea);
 			simpleGestureDetector.checkMatrixBounds();
-			newArea.getBubbleRect(getContext());
+			AndroidLogger.e(new RectF(newArea.getBubbleRect(getContext())).toString());
 			invalidate();
-			getHandler().post(new ScrollRunnable(simpleGestureDetector));
+//			getHandler().post(new ScrollRunnable(simpleGestureDetector));
 		}
 	}
 	

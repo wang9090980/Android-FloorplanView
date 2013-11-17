@@ -17,7 +17,7 @@ import android.view.View;
  * 矩形区域
  */
 public abstract class RectArea implements Area{
-	private int baseBubbleDrawableWidth;
+	private int baseBubbleDrawableWidth = -100;
 	private boolean isShowBubble;
 	private boolean isClickedArea;
 	private RectF bubbleRect;
@@ -176,6 +176,9 @@ public abstract class RectArea implements Area{
 	}
 	
 	private float getScale(Context context){
+		if(baseBubbleDrawableWidth == -100){
+			baseBubbleDrawableWidth = getBaseBubbleDrawable(context).getIntrinsicWidth();
+		}
 		return (float) baseBubbleDrawableWidth/getBubbleDrawableOriginalWidth();
 	}
 	
@@ -226,8 +229,8 @@ public abstract class RectArea implements Area{
 			bubbleRect.top = (getAreaRect().top + getAreaRect().bottom)/2;
 			bubbleRect.left = (getAreaRect().left + bubbleRect.left)/2;	//再次将位置移动至矩形的四分之一处（左上角）
 			bubbleRect.top = (getAreaRect().top + bubbleRect.top)/2;
-			bubbleRect.left -= getBubbleXOffset() * getScale(context);	//再次根据气泡的X轴偏移量 便宜X坐标
 			bubbleRect.top -= getBubbleDrawable(context).getBounds().height();	//再次根据气泡的高度便宜Y坐标
+			bubbleRect.left -= getBubbleXOffset() * getScale(context);	//再次根据气泡的X轴偏移量 便宜X坐标
 			bubbleRect.right = bubbleRect.left + getBubbleDrawable(context).getBounds().width();
 			bubbleRect.bottom = bubbleRect.top + getBubbleDrawable(context).getBounds().height();
 		}
