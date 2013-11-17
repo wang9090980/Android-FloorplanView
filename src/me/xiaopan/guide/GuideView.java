@@ -451,9 +451,9 @@ public class GuideView extends View implements SimpleGestureListener{
 		return initialZoomMode;
 	}
 
-//	public void setInitialZoomMode(InitialZoomMode initialZoomMode) {
-//		this.initialZoomMode = initialZoomMode;
-//	}
+	public void setInitialZoomMode(InitialZoomMode initialZoomMode) {
+		this.initialZoomMode = initialZoomMode;
+	}
 
 	public enum InitialZoomMode{
 		MIN, DEFAULT, MAX;
