@@ -329,7 +329,9 @@ public class GuideView extends View implements SimpleGestureListener{
 			offsetRect.set(0, 0, 0, 0);
 			checkOffset(newArea);
 			simpleGestureDetector.checkMatrixBounds();
+			newArea.getBubbleRect(getContext());
 			invalidate();
+			getHandler().post(new ScrollRunnable(simpleGestureDetector));
 		}
 	}
 	
@@ -397,7 +399,7 @@ public class GuideView extends View implements SimpleGestureListener{
 					offsetWidth = (getWidth() - area.getBubbleDrawable(getContext()).getBounds().width())/2;
 				}
 				int offsetHeight = (getHeight() - area.getBubbleDrawable(getContext()).getBounds().height())/2;
-				setTranslate(area.getBubbleDrawableShowPoint(getContext()).x- offsetWidth, area.getBubbleDrawableShowPoint(getContext()).y - offsetHeight);
+				setTranslate(area.getBubbleRect(getContext()).left- offsetWidth, area.getBubbleRect(getContext()).top - offsetHeight);
 			}else{
 				getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 					@Override
@@ -412,22 +414,22 @@ public class GuideView extends View implements SimpleGestureListener{
 	
 	private void checkOffset(Area area){
 		/* 记录四边的值，以便扩大显示区域，显示超出部分 */
-		float left = area.getBubbleDrawableShowPoint(getContext()).x * simpleGestureDetector.getScaleContorller().getCurrentScale();
+		float left = area.getBubbleRect(getContext()).left * simpleGestureDetector.getScaleContorller().getCurrentScale();
 		if(left < 0 && left < offsetRect.left){
 			offsetRect.left = left;
 		}
 
-		float top = area.getBubbleDrawableShowPoint(getContext()).y * simpleGestureDetector.getScaleContorller().getCurrentScale();
+		float top = area.getBubbleRect(getContext()).top * simpleGestureDetector.getScaleContorller().getCurrentScale();
 		if(top < 0 && top < offsetRect.top){
 			offsetRect.top = top;
 		}
 		
-		float right = (area.getBubbleDrawableShowPoint(getContext()).x + area.getBubbleDrawable(getContext()).getBounds().width()) * simpleGestureDetector.getScaleContorller().getCurrentScale();
+		float right = area.getBubbleRect(getContext()).right * simpleGestureDetector.getScaleContorller().getCurrentScale();
 		if(right > offsetRect.right){
 			offsetRect.right = right;
 		}
 		
-		float bottom = (area.getBubbleDrawableShowPoint(getContext()).y + area.getBubbleDrawable(getContext()).getBounds().height()) * simpleGestureDetector.getScaleContorller().getCurrentScale();
+		float bottom = area.getBubbleRect(getContext()).bottom * simpleGestureDetector.getScaleContorller().getCurrentScale();
 		if(bottom > offsetRect.bottom){
 			offsetRect.bottom = bottom;
 		}

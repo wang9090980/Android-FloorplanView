@@ -11,6 +11,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -19,11 +20,11 @@ import android.view.View;
  * 路径区域，用来显示多边形
  */
 public abstract class PathArea implements Area{
-	protected PointF bubbleDrawableShowPoint;
-	protected Drawable bubbleDrawable;
 	private boolean isShowBubble;
 	private boolean isClickedArea;
 	private int baseBubbleDrawableWidth;
+	private RectF bubbleRect;
+	protected Drawable bubbleDrawable;
 	
 	/**
 	 * 获取所有坐标点
@@ -164,7 +165,7 @@ public abstract class PathArea implements Area{
 	@Override
 	public void drawBubble(Context context, Canvas canvas) {
 		canvas.save();
-		canvas.translate(getBubbleDrawableShowPoint(context).x, getBubbleDrawableShowPoint(context).y);
+		canvas.translate(getBubbleRect(context).left, getBubbleRect(context).top);
 		getBubbleDrawable(context).draw(canvas);
 		canvas.restore();
 	}
@@ -176,8 +177,8 @@ public abstract class PathArea implements Area{
 		
 		canvas.save();
 		if(isShowBubble()){
-			if(!isClickedArea() && bubbleDrawableShowPoint != null && bubbleDrawable != null){
-				canvas.translate(bubbleDrawableShowPoint.x, bubbleDrawableShowPoint.y);
+			if(!isClickedArea() && bubbleRect != null && bubbleDrawable != null){
+				canvas.translate(bubbleRect.left, bubbleRect.top);
 				canvas.drawRect(0, 0, bubbleDrawable.getBounds().width(), bubbleDrawable.getBounds().height() - (getVoidHeight() * getScale(context)), paint);
 			}
 		}else{
@@ -206,8 +207,8 @@ public abstract class PathArea implements Area{
 
 	@Override
 	public boolean isClickBubble(Context context, float x, float y) {
-		if(bubbleDrawableShowPoint != null && bubbleDrawable != null){
-			return x >= bubbleDrawableShowPoint.x && x <= (bubbleDrawableShowPoint.x +bubbleDrawable.getBounds().width()) && y >= bubbleDrawableShowPoint.y && y <= (bubbleDrawableShowPoint.y +(bubbleDrawable.getBounds().height() - (getVoidHeight() * getScale(context))));
+		if(bubbleRect != null && bubbleDrawable != null){
+			return x >= bubbleRect.left && x <= bubbleRect.right && y >= bubbleRect.top && y <= (bubbleRect.bottom - (getVoidHeight() * getScale(context)));
 		}else{
 			return false;
 		}
@@ -234,18 +235,19 @@ public abstract class PathArea implements Area{
 	} 
 
 	@Override
-	public PointF getBubbleDrawableShowPoint(Context context) {
-		if(bubbleDrawableShowPoint == null){
-			bubbleDrawableShowPoint = new PointF(getCoordinates()[0].x, getCoordinates()[0].y);
-			if(bubbleDrawable == null){
-				getBubbleDrawable(context);
-			}
-			bubbleDrawableShowPoint.x -= getBubbleXOffset() * getScale(context);
-			bubbleDrawableShowPoint.y -= bubbleDrawable.getBounds().height();
+	public RectF getBubbleRect(Context context) {
+		if(bubbleRect == null){
+			bubbleRect = new RectF();	
+			bubbleRect.left = getCoordinates()[0].x;
+			bubbleRect.top = getCoordinates()[0].y;
+			bubbleRect.left -= getBubbleXOffset() * getScale(context);	//再次根据气泡的X轴偏移量 便宜X坐标
+			bubbleRect.top -= getBubbleDrawable(context).getBounds().height();	//再次根据气泡的高度便宜Y坐标
+			bubbleRect.right = bubbleRect.left + getBubbleDrawable(context).getBounds().width();
+			bubbleRect.bottom = bubbleRect.top + getBubbleDrawable(context).getBounds().height();
 		}
-		return bubbleDrawableShowPoint;
+		return bubbleRect;
 	}
-	
+
 	@Override
 	public Drawable getBubbleDrawable(Context context) {
 		if(bubbleDrawable == null){

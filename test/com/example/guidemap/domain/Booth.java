@@ -202,7 +202,7 @@ public class Booth extends RectArea{
 	}
 
 	@Override
-	public RectF getRect() {
+	public RectF getAreaRect() {
 		if(rect == null){
 			rect = new RectF(getLeft(), getTop(), getRight(), getBottom());
 		}

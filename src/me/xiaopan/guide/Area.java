@@ -3,7 +3,7 @@ package me.xiaopan.guide;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.PointF;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -11,6 +11,7 @@ import android.view.View;
  * 地图上的区域
  */
 public interface Area {
+	
 	/**
 	 * 是否点击了矩形区域
 	 * @param x
@@ -57,11 +58,11 @@ public interface Area {
 	public Drawable getBubbleDrawable(Context context);
 	
 	/**
-	 * 获取气泡图片显示位置
+	 * 获取气泡的位置
 	 * @param context
 	 * @return
 	 */
-	public PointF getBubbleDrawableShowPoint(Context context);
+	public abstract RectF getBubbleRect(Context context);
 	
 	/**
 	 * 是否显示气泡
