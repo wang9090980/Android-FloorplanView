@@ -48,7 +48,7 @@ public class MainActivity extends Activity {
 				}
 			}
 		});
-//		guideMapView.location(booths.get(20));
+		guideMapView.location(booths.get(10));
 		guideMapView.setTextView((TextView) findViewById(R.id.text));
 	}
 }

@@ -3,7 +3,6 @@ package me.xiaopan.guide;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.xiaopan.easy.android.util.AndroidLogger;
 import me.xiaopan.easy.android.util.ViewUtils;
 import me.xiaopan.guide.SimpleGestureDetector.SimpleGestureListener;
 import android.content.Context;
@@ -11,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.TextView;
 
-
 /**
  * 导览图
  */
@@ -28,8 +27,7 @@ public class GuideView extends View implements SimpleGestureListener{
 	private RectF displayRect;
 	private Matrix drawMatrix;
 	private Listener listener;
-	private Drawable drawable;
-	private Bitmap bitmap;
+	private BitmapDrawable drawable;
 	private List<Area> areas;
 	private List<Area> bubbleAreas;
 	private InitialZoomMode initialZoomMode;
@@ -116,12 +114,8 @@ public class GuideView extends View implements SimpleGestureListener{
 	 * @param mapHeight 地图的高，如果该值小于0将使用mapBitmap.getIntrinsicHeight()代替
 	 */
 	public void setMap(Bitmap mapBitmap, List<Area> newAreas, int mapWidth, int mapHeight) {
-		//释放旧的图片
-		if(bitmap != null && !bitmap.isRecycled()){
-			bitmap.recycle();
-			bitmap = null;
-		}
 		if(drawable != null){
+			drawable.getBitmap().recycle();
 			drawable.setCallback(null);
 			unscheduleDrawable(drawable);
 			drawable = null;
@@ -138,8 +132,7 @@ public class GuideView extends View implements SimpleGestureListener{
 		
 		if(mapBitmap != null && newAreas != null && newAreas.size() > 0){
 			this.areas = newAreas;
-			this.bitmap = mapBitmap;
-			drawable = new BitmapDrawable(getResources(), bitmap);
+			drawable = new BitmapDrawable(getResources(), mapBitmap);
 			drawable.setBounds(0, 0, mapWidth>0?mapWidth:drawable.getIntrinsicWidth(), mapHeight > 0?mapHeight:drawable.getIntrinsicHeight());
 			drawMatrix = new Matrix();
 			simpleGestureDetector = new SimpleGestureDetector(this, this);
@@ -286,11 +279,8 @@ public class GuideView extends View implements SimpleGestureListener{
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		if(bitmap != null && !bitmap.isRecycled()){
-			bitmap.recycle();
-			bitmap = null;
-		}
 		if(drawable != null){
+			drawable.getBitmap().recycle();
 			drawable.setCallback(null);
 			unscheduleDrawable(drawable);
 		}
@@ -320,19 +310,70 @@ public class GuideView extends View implements SimpleGestureListener{
 	 */
 	public void showSingleBubble(Area newArea){
 		if(isAllow() && newArea != null){
+			/* 清除已有的气泡 */
 			if(bubbleAreas == null){
 				bubbleAreas = new ArrayList<Area>(1);
 			}else{
 				clearAllBubble();
 			}
+			
+			/* 添加气泡 */
 			newArea.setShowBubble(true, this);
 			bubbleAreas.add(newArea);
-			offsetRect.set(0, 0, 0, 0);
-			checkOffset(newArea);
-			simpleGestureDetector.checkMatrixBounds();
-			AndroidLogger.e(new RectF(newArea.getBubbleRect(getContext())).toString());
 			invalidate();
-//			getHandler().post(new ScrollRunnable(simpleGestureDetector));
+			
+			/* 尝试移动屏幕到气泡的位置，知道把气泡完全显示出来 */
+			Point point = computeScrollOffset(bubbleAreas.get(0).getBubbleRect(getContext()));
+			if(point != null){
+				getHandler().post(new ScrollRunnable(simpleGestureDetector, point.x, point.y));
+			}
+		}
+	}
+	
+	/**
+	 * 计算滚动位置
+	 * @param rectf
+	 * @return
+	 */
+	private Point computeScrollOffset(RectF tempRectf){
+		RectF rectf = new RectF(tempRectf);
+		rectf.left *= simpleGestureDetector.getScaleContorller().getCurrentScale();
+		rectf.top *= simpleGestureDetector.getScaleContorller().getCurrentScale();
+		rectf.right *= simpleGestureDetector.getScaleContorller().getCurrentScale();
+		rectf.bottom *= simpleGestureDetector.getScaleContorller().getCurrentScale();
+		
+		RectF offsetRect = new RectF(Math.abs(getDisplayRect().left) - rectf.left, Math.abs(getDisplayRect().top) - rectf.top, rectf.right - (Math.abs(getDisplayRect().left) + getWidth()), rectf.bottom - (Math.abs(getDisplayRect().top) + getHeight()));
+		
+		float xOffset = 0;
+		if(offsetRect.left > 0){
+			xOffset = offsetRect.left;
+		}else if(offsetRect.right > 0){
+			if(rectf.width() > getWidth()){
+				xOffset = offsetRect.left;
+			}else{
+				xOffset = -offsetRect.right;
+			}
+		}
+		
+		float yOffset = 0;
+		if(offsetRect.top > 0){
+			yOffset = offsetRect.top;
+		}else if(offsetRect.bottom > 0){
+			yOffset = -offsetRect.bottom;
+		}
+		
+		if(xOffset != 0 && rectf.width() < getWidth()){
+			xOffset += (getWidth() - rectf.width()) / 2 * (xOffset > 0?1:-1);
+		}
+		
+		if(yOffset != 0 && rectf.height() < getHeight()){
+			yOffset += (getHeight() - rectf.height()) / 2 * (yOffset > 0?1:-1);
+		}
+		
+		if(xOffset != 0 || yOffset != 0){
+			return new Point((int) xOffset, (int) yOffset);
+		}else{
+			return null;
 		}
 	}
 	
@@ -393,14 +434,8 @@ public class GuideView extends View implements SimpleGestureListener{
 	public void location(final Area area){
 		if(isAllow() && area != null){
 			if(getWidth() > 0){
-				showSingleBubble(area);
 				setScale(1.0f, false);
-				int offsetWidth = 50;
-				if(getWidth() > area.getBubbleDrawable(getContext()).getBounds().width()){
-					offsetWidth = (getWidth() - area.getBubbleDrawable(getContext()).getBounds().width())/2;
-				}
-				int offsetHeight = (getHeight() - area.getBubbleDrawable(getContext()).getBounds().height())/2;
-				setTranslate(area.getBubbleRect(getContext()).left- offsetWidth, area.getBubbleRect(getContext()).top - offsetHeight);
+				showSingleBubble(area);
 			}else{
 				getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 					@Override

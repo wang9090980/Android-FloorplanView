@@ -20,17 +20,17 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Scroller;
 
 /**
- * 移动到指定位置
+ * 移动指定的偏移量
  */
 public class ScrollRunnable implements Runnable {
 	private Scroller mScroller;
 	private int mCurrentX, mCurrentY;
 	private SimpleGestureDetector simpleGestureDetector;
 	
-	public ScrollRunnable(SimpleGestureDetector simpleGestureDetector){
+	public ScrollRunnable(SimpleGestureDetector simpleGestureDetector, int xOffset, int yOffset){
 		this.simpleGestureDetector = simpleGestureDetector;
 		mScroller = new Scroller(simpleGestureDetector.getGuideView().getContext(), new AccelerateDecelerateInterpolator());
-		mScroller.startScroll(0, 0, 200, 200, 500);
+		mScroller.startScroll(0, 0, xOffset, yOffset, 300);
 	}
 	
 	@Override
