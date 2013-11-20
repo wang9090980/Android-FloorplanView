@@ -143,10 +143,15 @@ public abstract class RectArea implements Area{
 	}
 	
 	@Override
-	public void drawArea(Canvas canvas, Paint paint){
+	public void drawArea(Canvas canvas, Paint paint, float scale){
 		canvas.save();
 		paint.setColor(getAreaColor());
-		canvas.drawRect(getAreaRect(), paint);
+		RectF rect = new RectF(getAreaRect());
+		rect.left *= scale;
+		rect.top *= scale;
+		rect.right *= scale;
+		rect.bottom *= scale;
+		canvas.drawRect(rect, paint);
 		canvas.restore();
 	}
 
