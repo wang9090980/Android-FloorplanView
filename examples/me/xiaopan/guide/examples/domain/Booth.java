@@ -23,7 +23,6 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Booth extends RectArea{
 	private RectF rect;
-	private List<DrawText> drawTexts;
 	private static Rect areaPadding = new Rect(2, 2, 2, 2);
 	
 	@Expose
@@ -255,7 +254,6 @@ public class Booth extends RectArea{
 	
 	@Override
 	public void drawArea(Canvas canvas, Paint paint, float scale) {
-		canvas.save();
 		paint.setColor(getAreaColor());
 		RectF rect = new RectF(getAreaRect());
 		rect.left *= scale;
@@ -273,47 +271,46 @@ public class Booth extends RectArea{
 			paint.setTextSize(16 * scale);
 			paint.setAntiAlias(true);
 			paint.setFilterBitmap(true);
-			if(drawTexts == null){
-				drawTexts = new LinkedList<Booth.DrawText>();
-				float textWidth = TextUtils.getTextWidth(paint, boothNumber);
-				float textHeight = TextUtils.getTextHeight(paint);
-				//如果不需要多行显示
-				if(textWidth <= rect.width() - areaPadding.left - areaPadding.right){
-					drawTexts.add(new DrawText(boothNumber, rect.left + areaPadding.left + ((rect.width() - textWidth)/2), rect.top + areaPadding.top + TextUtils.getTextLeading(paint) + ((rect.height() - textHeight)/2)));
-				}else{
-					/* 先按长度将字符串分割 */
-					List<String> strins = new LinkedList<String>();
-					StringBuffer stringBuffer = new StringBuffer();
-					char[] chars = boothNumber.toCharArray();
-					for(int w = 0; w < chars.length; w++){
-						stringBuffer.append(chars[w]);
-						String s = stringBuffer.toString();
-						float tempTextWidth = TextUtils.getTextWidth(paint, s);
-						if(tempTextWidth == rect.width() - areaPadding.left - areaPadding.right){
-							strins.add(s);
-							stringBuffer.delete(0, stringBuffer.length());
-						}else if(tempTextWidth > rect.width() - areaPadding.left - areaPadding.right){
-							strins.add(s.substring(0, s.length() - 1));
-							stringBuffer.delete(0, stringBuffer.length() - 1);
-						}
-					}
+			
+			List<Booth.DrawText> drawTexts = new LinkedList<Booth.DrawText>();
+			float textWidth = TextUtils.getTextWidth(paint, boothNumber);
+			float textHeight = TextUtils.getTextHeight(paint);
+			//如果不需要多行显示
+			if(textWidth <= rect.width() - areaPadding.left - areaPadding.right){
+				drawTexts.add(new DrawText(boothNumber, rect.left + areaPadding.left + ((rect.width() - textWidth)/2), rect.top + areaPadding.top + TextUtils.getTextLeading(paint) + ((rect.height() - textHeight)/2)));
+			}else{
+				/* 先按长度将字符串分割 */
+				List<String> strins = new LinkedList<String>();
+				StringBuffer stringBuffer = new StringBuffer();
+				char[] chars = boothNumber.toCharArray();
+				for(int w = 0; w < chars.length; w++){
+					stringBuffer.append(chars[w]);
 					String s = stringBuffer.toString();
-					if(StringUtils.isNotEmpty(s)){
+					float tempTextWidth = TextUtils.getTextWidth(paint, s);
+					if(tempTextWidth == rect.width() - areaPadding.left - areaPadding.right){
 						strins.add(s);
+						stringBuffer.delete(0, stringBuffer.length());
+					}else if(tempTextWidth > rect.width() - areaPadding.left - areaPadding.right){
+						strins.add(s.substring(0, s.length() - 1));
+						stringBuffer.delete(0, stringBuffer.length() - 1);
+					}
+				}
+				String s = stringBuffer.toString();
+				if(StringUtils.isNotEmpty(s)){
+					strins.add(s);
+				}
+				
+				if(strins.size() > 0){
+					//计算垂直方向起始位置
+					float top = rect.top + areaPadding.top + TextUtils.getTextLeading(paint);
+					float needHeight = (strins.size() * textHeight);
+					if(needHeight < rect.height() - areaPadding.top - areaPadding.bottom){
+						top += (rect.height() - needHeight)/2;
 					}
 					
-					if(strins.size() > 0){
-						//计算垂直方向起始位置
-						float top = rect.top + areaPadding.top + TextUtils.getTextLeading(paint);
-						float needHeight = (strins.size() * textHeight);
-						if(needHeight < rect.height() - areaPadding.top - areaPadding.bottom){
-							top += (rect.height() - needHeight)/2;
-						}
-						
-						for(String string : strins){
-							drawTexts.add(new DrawText(string, rect.left + areaPadding.left, top));
-							top += textHeight;
-						}
+					for(String string : strins){
+						drawTexts.add(new DrawText(string, rect.left + areaPadding.left, top));
+						top += textHeight;
 					}
 				}
 			}
@@ -323,7 +320,6 @@ public class Booth extends RectArea{
 				}
 			}
 		}
-		canvas.restore();
 	}
 	
 	public class DrawText{

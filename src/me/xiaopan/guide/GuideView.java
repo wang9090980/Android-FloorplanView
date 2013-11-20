@@ -91,13 +91,6 @@ public class GuideView extends View implements SimpleGestureListener{
 			/* 绘制底图 */
 			drawable.draw(canvas);	
 			
-			/* 绘制区域 */
-//			if(areas != null && areas.size() > 0){
-//				for(Area area : areas){
-//					area.drawArea(canvas, rectPaint, 1.0f);
-//				}
-//			}
-			
 			/* 绘制按下状态 */
 			if(currentDownArea != null && !(currentDownArea.isShowBubble() && !currentDownArea.isClickedArea())){
 				currentDownArea.drawPressed(getContext(), canvas);
@@ -257,22 +250,23 @@ public class GuideView extends View implements SimpleGestureListener{
 				@Override
 				protected BitmapDrawable doInBackground(Integer... params) {
 					Bitmap mapBitmap = new BitmapDecoder((int) (Runtime.getRuntime().maxMemory()/4/4)).decodeFile(filePath);
-					Bitmap finalBitmap = mapBitmap.copy(Config.ARGB_8888, true);
+					Bitmap newBitmap = mapBitmap.copy(Config.ARGB_8888, true);
 					mapBitmap.recycle();
+					mapBitmap = newBitmap;
 					Options options = BitmapDecoder.decodeSizeFromFile(filePath);
 					int mapWidth = options.outWidth;
 					int mapHeight = options.outHeight;
 					
-					Canvas canvas = new Canvas(finalBitmap);
+					Canvas canvas = new Canvas(mapBitmap);
 					Paint rectPaint = new Paint();
 					int w = 0;
-					float scale = (float) finalBitmap.getWidth() / mapWidth;
+					float scale = (float) mapBitmap.getWidth() / mapWidth;
 					for(Area area : newAreas){
 						area.drawArea(canvas, rectPaint, scale);
 						onProgressUpdate(Integer.valueOf(MathUtils.percent(++w, newAreas.size(), 0, false, true)));
 					}
 					
-					BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), finalBitmap);
+					BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), mapBitmap);
 					bitmapDrawable.setBounds(0, 0, mapWidth>0?mapWidth:drawable.getIntrinsicWidth(), mapHeight > 0?mapHeight:drawable.getIntrinsicHeight());
 					return bitmapDrawable;
 				}
@@ -312,22 +306,23 @@ public class GuideView extends View implements SimpleGestureListener{
 				@Override
 				protected BitmapDrawable doInBackground(Integer... params) {
 					Bitmap mapBitmap = new BitmapDecoder((int) (Runtime.getRuntime().maxMemory()/4/4)).decodeFromAssets(getContext(), fileName);
-					Bitmap finalBitmap = mapBitmap.copy(Config.ARGB_8888, true);
+					Bitmap newBitmap = mapBitmap.copy(Config.ARGB_8888, true);
 					mapBitmap.recycle();
+					mapBitmap = newBitmap;
 					Options options = BitmapDecoder.decodeSizeFromAssets(getContext(), fileName);
 					int mapWidth = options.outWidth;
 					int mapHeight = options.outHeight;
 					
-					Canvas canvas = new Canvas(finalBitmap);
+					Canvas canvas = new Canvas(mapBitmap);
 					Paint rectPaint = new Paint();
 					int w = 0;
-					float scale = (float) finalBitmap.getWidth() / mapWidth;
+					float scale = (float) mapBitmap.getWidth() / mapWidth;
 					for(Area area : newAreas){
 						area.drawArea(canvas, rectPaint, scale);
 						onProgressUpdate(Integer.valueOf(MathUtils.percent(++w, newAreas.size(), 0, false, true)));
 					}
 					
-					BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), finalBitmap);
+					BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), mapBitmap);
 					bitmapDrawable.setBounds(0, 0, mapWidth>0?mapWidth:drawable.getIntrinsicWidth(), mapHeight > 0?mapHeight:drawable.getIntrinsicHeight());
 					return bitmapDrawable;
 				}

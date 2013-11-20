@@ -144,7 +144,6 @@ public abstract class RectArea implements Area{
 	
 	@Override
 	public void drawArea(Canvas canvas, Paint paint, float scale){
-		canvas.save();
 		paint.setColor(getAreaColor());
 		RectF rect = new RectF(getAreaRect());
 		rect.left *= scale;
@@ -152,15 +151,12 @@ public abstract class RectArea implements Area{
 		rect.right *= scale;
 		rect.bottom *= scale;
 		canvas.drawRect(rect, paint);
-		canvas.restore();
 	}
 
 	@Override
 	public void drawBubble(Context context, Canvas canvas) {
-		canvas.save();
 		canvas.translate(getBubbleRect(context).left, getBubbleRect(context).top);
 		getBubbleDrawable(context).draw(canvas);
-		canvas.restore();
 	}
 	
 	@Override
@@ -168,7 +164,6 @@ public abstract class RectArea implements Area{
 		Paint paint = new Paint();
 		paint.setColor(getPressedColor());
 		
-		canvas.save();
 		if(isShowBubble()){
 			if(!isClickedArea() && bubbleRect != null && bubbleDrawable != null){
 				canvas.translate(bubbleRect.left, bubbleRect.top);
@@ -177,7 +172,6 @@ public abstract class RectArea implements Area{
 		}else{
 			canvas.drawRect(getAreaRect(), paint);
 		}
-		canvas.restore();
 	}
 	
 	private float getScale(Context context){
