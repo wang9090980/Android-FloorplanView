@@ -45,7 +45,6 @@ public class GuideView extends View implements SimpleGestureListener{
 	private RectF offsetRect;
 	private Area waitLocationArea;
 	private boolean initFinsish;
-	Paint rectPaint = new Paint();
 
 	public GuideView(Context context) {
 		super(context);
