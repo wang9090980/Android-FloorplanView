@@ -33,8 +33,9 @@ public interface Area {
 	 * 绘制矩形区域
 	 * @param canvas
 	 * @param paint
+	 * @param scale
 	 */
-	public void drawArea(Canvas canvas, Paint paint);
+	public void drawArea(Canvas canvas, Paint paint, float scale);
 	
 	/**
 	 * 绘制气泡

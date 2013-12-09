@@ -146,28 +146,24 @@ public abstract class PathArea implements Area{
 	public abstract String getSubTitle();
 	
 	@Override
-	public void drawArea(Canvas canvas, Paint paint){
+	public void drawArea(Canvas canvas, Paint paint, float scale){
 		PointF[] coordinates = getCoordinates();
 		if(coordinates != null && coordinates.length >= 3){
-			canvas.save();
 			Path path = new Path();
-			path.moveTo(coordinates[0].x, coordinates[0].y);
+			path.moveTo(coordinates[0].x * scale, coordinates[0].y * scale);
 			for(int w = 1; w < coordinates.length; w++){
-				path.lineTo(coordinates[w].x, coordinates[w].y);
+				path.lineTo(coordinates[w].x * scale, coordinates[w].y * scale);
 			}
 			path.close();
 			paint.setColor(getAreaColor());
 			canvas.drawPath(path, paint);
-			canvas.restore();
 		}
 	}
 
 	@Override
 	public void drawBubble(Context context, Canvas canvas) {
-		canvas.save();
 		canvas.translate(getBubbleRect(context).left, getBubbleRect(context).top);
 		getBubbleDrawable(context).draw(canvas);
-		canvas.restore();
 	}
 
 	@Override
@@ -175,7 +171,6 @@ public abstract class PathArea implements Area{
 		Paint paint = new Paint();
 		paint.setColor(getPressedColor());
 		
-		canvas.save();
 		if(isShowBubble()){
 			if(!isClickedArea() && bubbleRect != null && bubbleDrawable != null){
 				canvas.translate(bubbleRect.left, bubbleRect.top);
@@ -193,7 +188,6 @@ public abstract class PathArea implements Area{
 				canvas.drawPath(path, paint);
 			}
 		}
-		canvas.restore();
 	}
 	
 	private float getScale(Context context){

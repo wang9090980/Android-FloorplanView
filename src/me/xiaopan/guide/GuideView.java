@@ -3,10 +3,17 @@ package me.xiaopan.guide;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.xiaopan.easy.android.util.BitmapDecoder;
+import me.xiaopan.easy.android.util.BitmapUtils;
 import me.xiaopan.easy.android.util.ViewUtils;
+import me.xiaopan.easy.java.util.MathUtils;
+import me.xiaopan.easy.java.util.StringUtils;
 import me.xiaopan.guide.SimpleGestureDetector.SimpleGestureListener;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.BitmapFactory.Options;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -14,6 +21,8 @@ import android.graphics.Point;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -35,7 +44,9 @@ public class GuideView extends View implements SimpleGestureListener{
 	private Area currentDownArea;
 	private TextView textView;
 	private RectF offsetRect;
-	Paint rectPaint = new Paint();
+	private Area waitLocationArea;
+	private boolean initFinsish;
+	private int maxSideLength;
 
 	public GuideView(Context context) {
 		super(context);
@@ -52,7 +63,9 @@ public class GuideView extends View implements SimpleGestureListener{
 		init();
 	}
 	
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	private void init(){
+		maxSideLength = 2000;
 		displayRect = new RectF();
 		offsetRect = new RectF();
 		initialZoomMode = InitialZoomMode.MIN;
@@ -69,18 +82,22 @@ public class GuideView extends View implements SimpleGestureListener{
 	@Override
 	protected void onDraw(Canvas canvas) {
 		if(drawable != null){
+			/* 设置矩阵以实现缩放、移动效果 */
 			if(drawMatrix != null){
 				canvas.concat(drawMatrix);
 			}
-			drawable.draw(canvas);	//绘制底图
-			for(Area area : areas){
-				area.drawArea(canvas, rectPaint);
-			}
-			if(currentDownArea != null && !(currentDownArea.isShowBubble() && !currentDownArea.isClickedArea())){	//绘制按下状态
+			
+			/* 绘制底图 */
+			drawable.draw(canvas);	
+			
+			/* 绘制按下状态 */
+			if(currentDownArea != null && !(currentDownArea.isShowBubble() && !currentDownArea.isClickedArea())){
 				currentDownArea.drawPressed(getContext(), canvas);
 			}
+			
+			/* 绘制气泡 */
 			offsetRect.set(0, 0, 0, 0);
-			if(bubbleAreas != null && bubbleAreas.size() > 0){	//绘制气泡
+			if(bubbleAreas != null && bubbleAreas.size() > 0){
 				for(Area area : bubbleAreas){
 					if(area.isShowBubble()){
 						area.drawBubble(getContext(), canvas);
@@ -88,7 +105,9 @@ public class GuideView extends View implements SimpleGestureListener{
 					}
 				}
 			}
-			if(currentDownArea != null && currentDownArea.isShowBubble() && !currentDownArea.isClickedArea()){	//绘制按下状态
+			
+			/* 绘制按下状态 */
+			if(currentDownArea != null && currentDownArea.isShowBubble() && !currentDownArea.isClickedArea()){
 				currentDownArea.drawPressed(getContext(), canvas);
 			}
 		}
@@ -105,17 +124,12 @@ public class GuideView extends View implements SimpleGestureListener{
 			return super.onTouchEvent(event);
 		}
 	}
-
-	/**
-	 * 设置地图
-	 * @param mapBitmap 地图图片
-	 * @param newAreas 地图上的区域
-	 * @param mapWidth 地图的宽，如果该值小于0将使用mapBitmap.getIntrinsicWidth()代替
-	 * @param mapHeight 地图的高，如果该值小于0将使用mapBitmap.getIntrinsicHeight()代替
-	 */
-	public void setMap(Bitmap mapBitmap, List<Area> newAreas, int mapWidth, int mapHeight) {
+	
+	private void setInitStart(){
 		if(drawable != null){
-			drawable.getBitmap().recycle();
+			if(drawable.getBitmap() != null && !drawable.getBitmap().isRecycled()){
+				drawable.getBitmap().recycle();
+			}
 			drawable.setCallback(null);
 			unscheduleDrawable(drawable);
 			drawable = null;
@@ -130,24 +144,250 @@ public class GuideView extends View implements SimpleGestureListener{
 			simpleGestureDetector = null;
 		}
 		
-		if(mapBitmap != null && newAreas != null && newAreas.size() > 0){
-			this.areas = newAreas;
-			drawable = new BitmapDrawable(getResources(), mapBitmap);
-			drawable.setBounds(0, 0, mapWidth>0?mapWidth:drawable.getIntrinsicWidth(), mapHeight > 0?mapHeight:drawable.getIntrinsicHeight());
+		if(areas != null){
+			areas.clear();
+			areas = null;
+		}
+		initFinsish = false;
+	}
+	
+	private void setInitFinish(BitmapDrawable mapBitmapDrawable, List<Area> areas){
+		if(mapBitmapDrawable != null && areas != null && areas.size() > 0){
+			this.areas = areas;
+			drawable = mapBitmapDrawable;
 			drawMatrix = new Matrix();
-			simpleGestureDetector = new SimpleGestureDetector(this, this);
+			simpleGestureDetector = new SimpleGestureDetector(GuideView.this, GuideView.this);
 			simpleGestureDetector.getScaleContorller().init();
 			invalidate();
+			if(listener != null){
+				listener.onInitFinish();
+			}
+			initFinsish = true;
+			if(waitLocationArea != null){
+				location(waitLocationArea);
+				waitLocationArea = null;
+			}
 		}
 	}
 
 	/**
 	 * 设置地图
+	 * @param baseMapBitmap 地图图片
+	 * @param newAreas 地图上的区域
+	 * @param suggestMapWidth 地图的宽，如果该值小于0将使用mapBitmap.getWidth()代替
+	 * @param suggestMapHeight 地图的高，如果该值小于0将使用mapBitmap.getHeight()代替
+	 */
+	public void setMap(final Bitmap baseMapBitmap, final List<Area> newAreas, final int suggestMapWidth, final int suggestMapHeight) {
+		setInitStart();
+		if(baseMapBitmap != null && newAreas != null && newAreas.size() > 0){
+			new AsyncTask<Integer, Integer, BitmapDrawable>() {
+				@Override
+				protected void onPreExecute() {
+					initFinsish = false;
+					if(listener != null){
+						listener.onInitStart();
+					}
+				}
+				
+				@Override
+				protected BitmapDrawable doInBackground(Integer... params) {
+					/* 初始化底图的最终宽高 */
+					int mapWidth =  suggestMapWidth>0?suggestMapWidth:baseMapBitmap.getWidth();
+					int mapHeight =  suggestMapHeight>0?suggestMapHeight:baseMapBitmap.getHeight();
+					
+					/* 限制底图的最大边长并创建底图副本 */
+					Bitmap mapBitmap = null;
+					if(baseMapBitmap.getWidth() > maxSideLength){
+						mapBitmap = BitmapUtils.scaleByWidth(baseMapBitmap, maxSideLength);
+						baseMapBitmap.recycle();
+					}else if(baseMapBitmap.getHeight() > maxSideLength){
+						mapBitmap = BitmapUtils.scaleByHeight(baseMapBitmap, maxSideLength);
+						baseMapBitmap.recycle();
+					}else{
+						mapBitmap = baseMapBitmap.copy(Config.ARGB_8888, true);
+						baseMapBitmap.recycle();
+					}
+					
+					/* 在底图上绘制区域 */
+					Canvas canvas = new Canvas(mapBitmap);
+					Paint rectPaint = new Paint();
+					int w = 0;
+					float scale = (float) mapBitmap.getWidth() / suggestMapWidth;
+					for(Area area : newAreas){
+						area.drawArea(canvas, rectPaint, scale);
+						onProgressUpdate(Integer.valueOf(MathUtils.percent(++w, newAreas.size(), 0, false, true)));
+					}
+					
+					/* 创建底图 */
+					BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), mapBitmap);
+					bitmapDrawable.setBounds(0, 0, mapWidth, mapHeight);
+					return bitmapDrawable;
+				}
+				
+				@Override
+				protected void onProgressUpdate(Integer... values) {
+					if(listener != null){
+						listener.onInitProgressUpdate(values[0]);
+					}
+				}
+
+				@Override
+				protected void onPostExecute(BitmapDrawable result) {
+					setInitFinish(result, newAreas);
+				}
+			}.execute(0);
+		}
+	}
+	
+	/**
+	 * 设置地图，地图的宽高默认为mapBitmap的宽高
 	 * @param mapBitmap
 	 * @param newAreas
 	 */
 	public void setMap(Bitmap mapBitmap, List<Area> newAreas) {
 		setMap(mapBitmap, newAreas, -1, -1);
+	}
+	
+	/**
+	 * 设置地图
+	 * @param filePath 地图图片的路径
+	 * @param newAreas 地图上的区域
+	 */
+	public void setMap(final String filePath, final List<Area> newAreas){
+		setInitStart();
+		if(StringUtils.isNotEmpty(filePath) && newAreas != null && newAreas.size() > 0){
+			new AsyncTask<Integer, Integer, BitmapDrawable>() {
+				@Override
+				protected void onPreExecute() {
+					initFinsish = false;
+					if(listener != null){
+						listener.onInitStart();
+					}
+				}
+				
+				@Override
+				protected BitmapDrawable doInBackground(Integer... params) {
+					/* 限制底图的最大边长并创建底图副本 */
+					Bitmap mapBitmap = new BitmapDecoder((int) (Runtime.getRuntime().maxMemory()/4/4)).decodeFile(filePath);
+					if(mapBitmap.getWidth() > maxSideLength){
+						Bitmap tempBitmap = BitmapUtils.scaleByWidth(mapBitmap, maxSideLength);
+						mapBitmap.recycle();
+						mapBitmap = tempBitmap;
+					}else if(mapBitmap.getHeight() > maxSideLength){
+						Bitmap tempBitmap = BitmapUtils.scaleByHeight(mapBitmap, maxSideLength);
+						mapBitmap.recycle();
+						mapBitmap = tempBitmap;
+					}else{
+						Bitmap tempBitmap = mapBitmap.copy(Config.ARGB_8888, true);
+						mapBitmap.recycle();
+						mapBitmap = tempBitmap;
+					}
+					
+					/* 初始化底图的最终宽高 */
+					Options options = BitmapDecoder.decodeSizeFromFile(filePath);
+					int mapWidth = options.outWidth;
+					int mapHeight = options.outHeight;
+					
+					/* 在底图上绘制区域 */
+					Canvas canvas = new Canvas(mapBitmap);
+					Paint rectPaint = new Paint();
+					int w = 0;
+					float scale = (float) mapBitmap.getWidth() / mapWidth;
+					for(Area area : newAreas){
+						area.drawArea(canvas, rectPaint, scale);
+						onProgressUpdate(Integer.valueOf(MathUtils.percent(++w, newAreas.size(), 0, false, true)));
+					}
+					
+					/* 创建底图 */
+					BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), mapBitmap);
+					bitmapDrawable.setBounds(0, 0, mapWidth, mapHeight);
+					return bitmapDrawable;
+				}
+				
+				@Override
+				protected void onProgressUpdate(Integer... values) {
+					if(listener != null){
+						listener.onInitProgressUpdate(values[0]);
+					}
+				}
+
+				@Override
+				protected void onPostExecute(BitmapDrawable result) {
+					setInitFinish(result, newAreas);
+				}
+			}.execute(0);
+		}
+	}
+	
+	/**
+	 * 设置地图，将从assets文件夹下获取文件
+	 * @param fileName assets文件夹下的地图文件的名称
+	 * @param newAreas 地图上的区域
+	 */
+	public void setMapFromAssets(final String fileName, final List<Area> newAreas){
+		setInitStart();
+		if(StringUtils.isNotEmpty(fileName) && newAreas != null && newAreas.size() > 0){
+			new AsyncTask<Integer, Integer, BitmapDrawable>() {
+				@Override
+				protected void onPreExecute() {
+					initFinsish = false;
+					if(listener != null){
+						listener.onInitStart();
+					}
+				}
+				
+				@Override
+				protected BitmapDrawable doInBackground(Integer... params) {
+					/* 限制底图的最大边长并创建底图副本 */
+					Bitmap mapBitmap = new BitmapDecoder((int) (Runtime.getRuntime().maxMemory()/4/4)).decodeFromAssets(getContext(), fileName);
+					if(mapBitmap.getWidth() > maxSideLength){
+						Bitmap tempBitmap = BitmapUtils.scaleByWidth(mapBitmap, maxSideLength);
+						mapBitmap.recycle();
+						mapBitmap = tempBitmap;
+					}else if(mapBitmap.getHeight() > maxSideLength){
+						Bitmap tempBitmap = BitmapUtils.scaleByHeight(mapBitmap, maxSideLength);
+						mapBitmap.recycle();
+						mapBitmap = tempBitmap;
+					}else{
+						Bitmap tempBitmap = mapBitmap.copy(Config.ARGB_8888, true);
+						mapBitmap.recycle();
+						mapBitmap = tempBitmap;
+					}
+					
+					/* 初始化底图的最终宽高 */
+					Options options = BitmapDecoder.decodeSizeFromAssets(getContext(), fileName);
+					int mapWidth = options.outWidth;
+					int mapHeight = options.outHeight;
+					
+					/* 在底图上绘制区域 */
+					Canvas canvas = new Canvas(mapBitmap);
+					Paint rectPaint = new Paint();
+					int w = 0;
+					float scale = (float) mapBitmap.getWidth() / mapWidth;
+					for(Area area : newAreas){
+						area.drawArea(canvas, rectPaint, scale);
+						onProgressUpdate(Integer.valueOf(MathUtils.percent(++w, newAreas.size(), 0, false, true)));
+					}
+					
+					/* 创建底图 */
+					BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), mapBitmap);
+					bitmapDrawable.setBounds(0, 0, mapWidth, mapHeight);
+					return bitmapDrawable;
+				}
+				
+				@Override
+				protected void onProgressUpdate(Integer... values) {
+					if(listener != null){
+						listener.onInitProgressUpdate(values[0]);
+					}
+				}
+
+				@Override
+				protected void onPostExecute(BitmapDrawable result) {
+					setInitFinish(result, newAreas);
+				}
+			}.execute(0);
+		}
 	}
 	
     /**
@@ -206,7 +446,7 @@ public class GuideView extends View implements SimpleGestureListener{
 			if(currentDownArea.isShowBubble()){
 				if(!currentDownArea.isClickedArea()){
 					if(listener != null){
-						listener.onClickAreaBubble(currentDownArea);
+						listener.onClickBubble(currentDownArea);
 					}
 				}
 			}else{
@@ -432,18 +672,24 @@ public class GuideView extends View implements SimpleGestureListener{
 	 * @param y
 	 */
 	public void location(final Area area){
-		if(isAllow() && area != null){
-			if(getWidth() > 0){
-				setScale(1.0f, false);
-				showSingleBubble(area);
-			}else{
-				getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
-					@Override
-					public void onGlobalLayout() {
-						location(area);
-						ViewUtils.removeOnGlobalLayoutListener(getViewTreeObserver(), this);
+		if(area != null){
+			if(initFinsish){
+				if(isAllow()){
+					if(getWidth() > 0){
+						setScale(1.0f, false);
+						showSingleBubble(area);
+					}else{
+						getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+							@Override
+							public void onGlobalLayout() {
+								location(area);
+								ViewUtils.removeOnGlobalLayoutListener(getViewTreeObserver(), this);
+							}
+						});
 					}
-				});
+				}
+			}else{
+				waitLocationArea = area;
 			}
 		}
 	}
@@ -496,8 +742,33 @@ public class GuideView extends View implements SimpleGestureListener{
 	}
 
 	public interface Listener{
+		/**
+		 * 开始初始化
+		 */
+		public void onInitStart();
+		
+		/**
+		 * 更新初始化进度
+		 * @param percent
+		 */
+		public void onInitProgressUpdate(int percent);
+		
+		/**
+		 * 初始化完成
+		 */
+		public void onInitFinish();
+		
+		/**
+		 * 点击了某一个区域
+		 * @param area
+		 */
 		public void onClickArea(Area area);
-		public void onClickAreaBubble(Area area);
+		
+		/**
+		 * 点击了某一个气泡
+		 * @param area
+		 */
+		public void onClickBubble(Area area);
 	}
 
 	public TextView getTextView() {
@@ -508,6 +779,14 @@ public class GuideView extends View implements SimpleGestureListener{
 		this.textView = textView;
 	}
 	
+	public int getMaxSideLength() {
+		return maxSideLength;
+	}
+
+	public void setMaxSideLength(int maxSideLength) {
+		this.maxSideLength = maxSideLength;
+	}
+
 	public boolean isAllow(){
 		return drawable != null && drawMatrix != null && simpleGestureDetector != null;
 	}

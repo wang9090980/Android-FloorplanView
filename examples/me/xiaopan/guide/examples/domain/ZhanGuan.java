@@ -1,7 +1,7 @@
-package com.example.guidemap.domain;
+package me.xiaopan.guide.examples.domain;
 
 import me.xiaopan.guide.PathArea;
-import me.xiaopan.guide.R;
+import me.xiaopan.guide.examples.R;
 import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
