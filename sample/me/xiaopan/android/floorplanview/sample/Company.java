@@ -1,4 +1,4 @@
-package me.xiaopan.android.planview.sample;
+package me.xiaopan.android.floorplanview.sample;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

@@ -1,7 +1,7 @@
-package me.xiaopan.android.planview.sample;
+package me.xiaopan.android.floorplanview.sample;
 
-import me.xiaopan.android.planview.PathArea;
-import me.xiaopan.android.planview.R;
+import me.xiaopan.android.floorplanview.PathArea;
+import me.xiaopan.android.floorplanview.R;
 import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;

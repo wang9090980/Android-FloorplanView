@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package me.xiaopan.android.planview;
+package me.xiaopan.android.floorplanview;
 
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;

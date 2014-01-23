@@ -1,4 +1,4 @@
-package me.xiaopan.android.planview;
+package me.xiaopan.android.floorplanview;
 
 import android.content.Context;
 import android.graphics.Canvas;

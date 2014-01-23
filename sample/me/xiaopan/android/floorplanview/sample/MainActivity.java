@@ -1,12 +1,12 @@
-package me.xiaopan.android.planview.sample;
+package me.xiaopan.android.floorplanview.sample;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import me.xiaopan.android.planview.Area;
-import me.xiaopan.android.planview.PlanView;
-import me.xiaopan.android.planview.PlanView.Listener;
-import me.xiaopan.android.planview.R;
+import me.xiaopan.android.floorplanview.Area;
+import me.xiaopan.android.floorplanview.PlanView;
+import me.xiaopan.android.floorplanview.PlanView.Listener;
+import me.xiaopan.android.floorplanview.R;
 import me.xiaopan.easy.android.util.AssetsUtils;
 import me.xiaopan.easy.android.util.ToastUtils;
 import android.app.Activity;

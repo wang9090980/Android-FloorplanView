@@ -1,9 +1,9 @@
-package me.xiaopan.android.planview;
+package me.xiaopan.android.floorplanview;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import me.xiaopan.android.planview.SimpleGestureDetector.SimpleGestureListener;
+import me.xiaopan.android.floorplanview.SimpleGestureDetector.SimpleGestureListener;
 import me.xiaopan.easy.android.util.BitmapDecoder;
 import me.xiaopan.easy.android.util.BitmapUtils;
 import me.xiaopan.easy.android.util.ViewUtils;

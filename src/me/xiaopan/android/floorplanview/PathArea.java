@@ -1,5 +1,6 @@
-package me.xiaopan.android.planview;
+package me.xiaopan.android.floorplanview;
 
+import me.xiaopan.easy.android.util.GeometryUtils;
 import me.xiaopan.easy.android.util.TextUtils;
 import me.xiaopan.easy.java.util.StringUtils;
 import android.content.Context;
@@ -7,6 +8,8 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
@@ -14,32 +17,28 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 /**
- * 矩形区域
+ * 路径区域，用来显示多边形
  */
-public abstract class RectArea implements Area{
-	private int baseBubbleDrawableWidth = -100;
+public abstract class PathArea implements Area{
 	private boolean isShowBubble;
 	private boolean isClickedArea;
+	private int baseBubbleDrawableWidth;
 	private RectF bubbleRect;
 	protected Drawable bubbleDrawable;
 	
 	/**
-	 * 获取绘制区域的坐标
+	 * 获取所有坐标点
 	 * @return
 	 */
-	public abstract RectF getAreaRect();
+	public abstract PointF[] getCoordinates();
 	
 	/**
-	 * 获取标题
+	 * 获取按下的时的颜色
 	 * @return
 	 */
-	public abstract String getTitle();
-	
-	/**
-	 * 获取副标题
-	 * @return
-	 */
-	public abstract String getSubTitle();
+	public int getPressedColor(){
+		return 0x80ff0000;
+	}
 	
 	/**
 	 * 获取气泡X轴偏移
@@ -47,6 +46,51 @@ public abstract class RectArea implements Area{
 	 */
 	public int getBubbleXOffset(){
 		return 0;
+	}
+	
+	/**
+	 * 获取无效的高度，一般为气泡小箭头的高度
+	 * @return
+	 */
+	public int getVoidHeight(){
+		return 0;
+	}
+	
+	/**
+	 * 获取最基础的气泡图片，我们需要在此图片上绘制标题以及副标题
+	 * @param context
+	 * @return
+	 */
+	public abstract Drawable getBaseBubbleDrawable(Context context);
+	
+	/**
+	 * 获取气泡的原始宽度
+	 * @return
+	 */
+	public abstract int getBubbleDrawableOriginalWidth();
+	
+	/**
+	 * 获取标题文本的颜色
+	 * @return
+	 */
+	public int getTitleTextColor(){
+		return 0xff000000;
+	}
+	
+	/**
+	 * 获取副标题文本的颜色
+	 * @return
+	 */
+	public int getSubTitleTextColor(){
+		return 0xff000000;
+	}
+	
+	/**
+	 * 获取区域的颜色
+	 * @return
+	 */
+	public int getAreaColor(){
+		return 0x800000ff;
 	}
 	
 	/**
@@ -90,67 +134,30 @@ public abstract class RectArea implements Area{
 	}
 	
 	/**
-	 * 获取气泡的原始宽度
+	 * 获取标题
 	 * @return
 	 */
-	public abstract int getBubbleDrawableOriginalWidth();
+	public abstract String getTitle();
 	
 	/**
-	 * 获取最基础的气泡图片，我们需要在此图片上绘制标题以及副标题
-	 * @param context
+	 * 获取副标题
 	 * @return
 	 */
-	public abstract Drawable getBaseBubbleDrawable(Context context);
-	
-	/**
-	 * 获取无效的高度，一般为气泡小箭头的高度
-	 * @return
-	 */
-	public int getVoidHeight(){
-		return 0;
-	}
-	
-	/**
-	 * 获取区域的颜色
-	 * @return
-	 */
-	public int getAreaColor(){
-		return 0x800000ff;
-	}
-	
-	/**
-	 * 获取按下的时的颜色
-	 * @return
-	 */
-	public int getPressedColor(){
-		return 0x80ff0000;
-	}
-	
-	/**
-	 * 获取标题文本的颜色
-	 * @return
-	 */
-	public int getTitleTextColor(){
-		return 0xff000000;
-	}
-	
-	/**
-	 * 获取副标题文本的颜色
-	 * @return
-	 */
-	public int getSubTitleTextColor(){
-		return 0xff000000;
-	}
+	public abstract String getSubTitle();
 	
 	@Override
 	public void drawArea(Canvas canvas, Paint paint, float scale){
-		paint.setColor(getAreaColor());
-		RectF rect = new RectF(getAreaRect());
-		rect.left *= scale;
-		rect.top *= scale;
-		rect.right *= scale;
-		rect.bottom *= scale;
-		canvas.drawRect(rect, paint);
+		PointF[] coordinates = getCoordinates();
+		if(coordinates != null && coordinates.length >= 3){
+			Path path = new Path();
+			path.moveTo(coordinates[0].x * scale, coordinates[0].y * scale);
+			for(int w = 1; w < coordinates.length; w++){
+				path.lineTo(coordinates[w].x * scale, coordinates[w].y * scale);
+			}
+			path.close();
+			paint.setColor(getAreaColor());
+			canvas.drawPath(path, paint);
+		}
 	}
 
 	@Override
@@ -158,9 +165,9 @@ public abstract class RectArea implements Area{
 		canvas.translate(getBubbleRect(context).left, getBubbleRect(context).top);
 		getBubbleDrawable(context).draw(canvas);
 	}
-	
+
 	@Override
-	public void drawPressed(Context context, Canvas canvas){
+	public void drawPressed(Context context, Canvas canvas) {
 		Paint paint = new Paint();
 		paint.setColor(getPressedColor());
 		
@@ -170,20 +177,26 @@ public abstract class RectArea implements Area{
 				canvas.drawRect(0, 0, bubbleDrawable.getBounds().width(), bubbleDrawable.getBounds().height() - (getVoidHeight() * getScale(context)), paint);
 			}
 		}else{
-			canvas.drawRect(getAreaRect(), paint);
+			PointF[] coordinates = getCoordinates();
+			if(coordinates != null && coordinates.length >= 3){
+				Path path = new Path();
+				path.moveTo(coordinates[0].x, coordinates[0].y);
+				for(int w = 1; w < coordinates.length; w++){
+					path.lineTo(coordinates[w].x, coordinates[w].y);
+				}
+				path.close();
+				canvas.drawPath(path, paint);
+			}
 		}
 	}
 	
 	private float getScale(Context context){
-		if(baseBubbleDrawableWidth == -100){
-			baseBubbleDrawableWidth = getBaseBubbleDrawable(context).getIntrinsicWidth();
-		}
 		return (float) baseBubbleDrawableWidth/getBubbleDrawableOriginalWidth();
 	}
 	
 	@Override
 	public boolean isClickArea(float x, float y){
-		return getAreaRect().contains(x, y);
+		return GeometryUtils.isPolygonContainPoint(new PointF(x, y), getCoordinates());
 	}
 
 	@Override
@@ -203,11 +216,6 @@ public abstract class RectArea implements Area{
 	@Override
 	public void setShowBubble(boolean isShowBubble, View view) {
 		this.isShowBubble = isShowBubble;
-		if(!isShowBubble && bubbleDrawable != null){
-			bubbleDrawable.setCallback(null);
-			view.unscheduleDrawable(bubbleDrawable);
-			bubbleDrawable = null;
-		}
 	}
 	
 	@Override
@@ -218,18 +226,16 @@ public abstract class RectArea implements Area{
 	@Override
 	public boolean isClickedArea() {
 		return isClickedArea;
-	}
+	} 
 
 	@Override
 	public RectF getBubbleRect(Context context) {
 		if(bubbleRect == null){
 			bubbleRect = new RectF();	
-			bubbleRect.left = (getAreaRect().left + getAreaRect().right)/2;//默认位置为矩形的中心
-			bubbleRect.top = (getAreaRect().top + getAreaRect().bottom)/2;
-			bubbleRect.left = (getAreaRect().left + bubbleRect.left)/2;	//再次将位置移动至矩形的四分之一处（左上角）
-			bubbleRect.top = (getAreaRect().top + bubbleRect.top)/2;
-			bubbleRect.top -= getBubbleDrawable(context).getBounds().height();	//再次根据气泡的高度便宜Y坐标
+			bubbleRect.left = getCoordinates()[0].x;
+			bubbleRect.top = getCoordinates()[0].y;
 			bubbleRect.left -= getBubbleXOffset() * getScale(context);	//再次根据气泡的X轴偏移量 便宜X坐标
+			bubbleRect.top -= getBubbleDrawable(context).getBounds().height();	//再次根据气泡的高度便宜Y坐标
 			bubbleRect.right = bubbleRect.left + getBubbleDrawable(context).getBounds().width();
 			bubbleRect.bottom = bubbleRect.top + getBubbleDrawable(context).getBounds().height();
 		}

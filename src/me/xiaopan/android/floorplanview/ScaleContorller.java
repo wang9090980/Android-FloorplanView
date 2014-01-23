@@ -1,6 +1,6 @@
-package me.xiaopan.android.planview;
+package me.xiaopan.android.floorplanview;
 
-import me.xiaopan.android.planview.PlanView.InitialZoomMode;
+import me.xiaopan.android.floorplanview.PlanView.InitialZoomMode;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 

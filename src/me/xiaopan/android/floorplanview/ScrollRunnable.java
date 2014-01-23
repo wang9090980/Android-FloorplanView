@@ -14,61 +14,23 @@
  * limitations under the License.
  */
 
-package me.xiaopan.android.planview;
+package me.xiaopan.android.floorplanview;
 
-import android.graphics.RectF;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Scroller;
 
 /**
- * 飞速滚动
+ * 移动指定的偏移量
  */
-public class FlingScrollRunnable implements Runnable {
+public class ScrollRunnable implements Runnable {
 	private Scroller mScroller;
 	private int mCurrentX, mCurrentY;
 	private SimpleGestureDetector simpleGestureDetector;
 	
-	public FlingScrollRunnable(SimpleGestureDetector simpleGestureDetector){
+	public ScrollRunnable(SimpleGestureDetector simpleGestureDetector, int xOffset, int yOffset){
 		this.simpleGestureDetector = simpleGestureDetector;
 		mScroller = new Scroller(simpleGestureDetector.getGuideView().getContext(), new AccelerateDecelerateInterpolator());
-	}
-	
-	public void cancelFling(){
-		mScroller.forceFinished(true);
-	}
-	
-	public void fling(int viewWidth, int viewHeight, int velocityX, int velocityY){
-		if(simpleGestureDetector.getGuideView().isAllow()){
-			final RectF rect = simpleGestureDetector.getGuideView().getDisplayRect();
-			if (null == rect) {
-				return;
-			}
-			
-			final int startX = Math.round(-rect.left);
-			final int minX, maxX, minY, maxY;
-			
-			if (viewWidth < rect.width()) {
-				minX = 0;
-				maxX = Math.round(rect.width() - viewWidth);
-			} else {
-				minX = maxX = startX;
-			}
-			
-			final int startY = Math.round(-rect.top);
-			if (viewHeight < rect.height()) {
-				minY = 0;
-				maxY = Math.round(rect.height() - viewHeight);
-			} else {
-				minY = maxY = startY;
-			}
-			
-			mCurrentX = startX;
-			mCurrentY = startY;
-			
-			if (startX != maxX || startY != maxY) {
-				mScroller.fling(startX, startY, velocityX, velocityY, minX, maxX, minY, maxY);
-			}
-		}
+		mScroller.startScroll(0, 0, xOffset, yOffset, 300);
 	}
 	
 	@Override
