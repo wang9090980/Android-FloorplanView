@@ -3,11 +3,11 @@ package me.xiaopan.android.floorplanview.sample;
 import java.util.LinkedList;
 import java.util.List;
 
+import me.xiaopan.android.easy.util.Colors;
+import me.xiaopan.android.easy.util.TextUtils;
 import me.xiaopan.android.floorplanview.R;
 import me.xiaopan.android.floorplanview.RectArea;
-import me.xiaopan.easy.android.util.Colors;
-import me.xiaopan.easy.android.util.TextUtils;
-import me.xiaopan.easy.java.util.StringUtils;
+import me.xiaopan.java.easy.util.StringUtils;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;

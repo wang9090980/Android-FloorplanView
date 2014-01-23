@@ -2,9 +2,9 @@ package me.xiaopan.android.floorplanview.sample;
 
 import java.util.List;
 
+import me.xiaopan.android.easy.util.Colors;
 import me.xiaopan.android.floorplanview.PathArea;
 import me.xiaopan.android.floorplanview.R;
-import me.xiaopan.easy.android.util.Colors;
 import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;

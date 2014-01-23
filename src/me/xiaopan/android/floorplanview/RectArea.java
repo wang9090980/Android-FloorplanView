@@ -1,7 +1,5 @@
 package me.xiaopan.android.floorplanview;
 
-import me.xiaopan.easy.android.util.TextUtils;
-import me.xiaopan.easy.java.util.StringUtils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -246,16 +244,16 @@ public abstract class RectArea implements Area{
 			/* 测量标题需要的宽和高 */
 			paint.setTextSize(getTilteTextSize());
 			paint.setColor(getTitleTextColor());
-			String title = StringUtils.checkLength(getTitle(), getTilteMaxLength());
-			int titleNeedWidth = (int) TextUtils.getTextWidth(paint, title);
-			int titleNeedHeight = TextUtils.getTextHeightByBounds(title, paint.getTextSize());
+			String title = RequiredUtils.checkLength(getTitle(), getTilteMaxLength());
+			int titleNeedWidth = (int) RequiredUtils.getTextWidth(paint, title);
+			int titleNeedHeight = RequiredUtils.getTextHeightByBounds(title, paint.getTextSize());
 			
 			/* 测量副标题需要的宽和高 */
 			paint.setTextSize(getSubTilteTextSize());
 			paint.setColor(getSubTitleTextColor());
-			String subTitle = StringUtils.checkLength(getSubTitle(), getSubTilteMaxLength());
-			int subTitleNeedWidth = (int) TextUtils.getTextWidth(paint, subTitle);
-			int subTitleNeedHeight = TextUtils.getTextHeightByBounds(subTitle, paint.getTextSize());
+			String subTitle = RequiredUtils.checkLength(getSubTitle(), getSubTilteMaxLength());
+			int subTitleNeedWidth = (int) RequiredUtils.getTextWidth(paint, subTitle);
+			int subTitleNeedHeight = RequiredUtils.getTextHeightByBounds(subTitle, paint.getTextSize());
 			
 			/* 计算最终气泡需要的宽高 */
 			int finalNeedWidth = titleNeedWidth>subTitleNeedWidth?titleNeedWidth:subTitleNeedWidth;
@@ -276,12 +274,12 @@ public abstract class RectArea implements Area{
 			/* 在新的气泡图片上绘制标题 */
 			paint.setTextSize(getTilteTextSize());
 			paint.setColor(getTitleTextColor());
-			canvas.drawText(title, paddingRect.left, paddingRect.top + TextUtils.getTextLeading(paint), paint);
+			canvas.drawText(title, paddingRect.left, paddingRect.top + RequiredUtils.getTextLeading(paint), paint);
 
 			/* 在新的气泡图片上绘制副标题 */
 			paint.setTextSize(getSubTilteTextSize());
 			paint.setColor(getSubTitleTextColor());
-			canvas.drawText(subTitle, backgDrawable.getBounds().width() - paddingRect.right - subTitleNeedWidth, paddingRect.top + TextUtils.getTextLeading(paint) + getIntervalOfHeight() + titleNeedHeight, paint);
+			canvas.drawText(subTitle, backgDrawable.getBounds().width() - paddingRect.right - subTitleNeedWidth, paddingRect.top + RequiredUtils.getTextLeading(paint) + getIntervalOfHeight() + titleNeedHeight, paint);
 			
 			bubbleDrawable = new BitmapDrawable(context.getResources(), bitmap);
 			bubbleDrawable.setBounds(0, 0, bubbleDrawable.getIntrinsicWidth(), bubbleDrawable.getMinimumHeight());

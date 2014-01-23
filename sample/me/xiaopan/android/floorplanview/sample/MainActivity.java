@@ -3,12 +3,12 @@ package me.xiaopan.android.floorplanview.sample;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.xiaopan.android.easy.util.AssetsUtils;
+import me.xiaopan.android.easy.util.ToastUtils;
 import me.xiaopan.android.floorplanview.Area;
 import me.xiaopan.android.floorplanview.FloorPlanView;
 import me.xiaopan.android.floorplanview.FloorPlanView.Listener;
 import me.xiaopan.android.floorplanview.R;
-import me.xiaopan.easy.android.util.AssetsUtils;
-import me.xiaopan.easy.android.util.ToastUtils;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
