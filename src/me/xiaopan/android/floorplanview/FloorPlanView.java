@@ -32,7 +32,7 @@ import android.widget.TextView;
 /**
  * 平面图
  */
-public class PlanView extends View implements SimpleGestureListener{
+public class FloorPlanView extends View implements SimpleGestureListener{
 	private RectF displayRect;
 	private Matrix drawMatrix;
 	private Listener listener;
@@ -48,17 +48,17 @@ public class PlanView extends View implements SimpleGestureListener{
 	private boolean initFinsish;
 	private int maxSideLength;
 
-	public PlanView(Context context) {
+	public FloorPlanView(Context context) {
 		super(context);
 		init();
 	}
 
-	public PlanView(Context context, AttributeSet attrs) {
+	public FloorPlanView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init();
 	}
 
-	public PlanView(Context context, AttributeSet attrs, int defStyle) {
+	public FloorPlanView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		init();
 	}
@@ -156,7 +156,7 @@ public class PlanView extends View implements SimpleGestureListener{
 			this.areas = areas;
 			drawable = mapBitmapDrawable;
 			drawMatrix = new Matrix();
-			simpleGestureDetector = new SimpleGestureDetector(PlanView.this, PlanView.this);
+			simpleGestureDetector = new SimpleGestureDetector(FloorPlanView.this, FloorPlanView.this);
 			simpleGestureDetector.getScaleContorller().init();
 			invalidate();
 			if(listener != null){

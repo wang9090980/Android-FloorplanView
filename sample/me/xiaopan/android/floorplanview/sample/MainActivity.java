@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.xiaopan.android.floorplanview.Area;
-import me.xiaopan.android.floorplanview.PlanView;
-import me.xiaopan.android.floorplanview.PlanView.Listener;
+import me.xiaopan.android.floorplanview.FloorPlanView;
+import me.xiaopan.android.floorplanview.FloorPlanView.Listener;
 import me.xiaopan.android.floorplanview.R;
 import me.xiaopan.easy.android.util.AssetsUtils;
 import me.xiaopan.easy.android.util.ToastUtils;
@@ -16,13 +16,13 @@ import android.widget.TextView;
 import com.google.gson.GsonBuilder;
 
 public class MainActivity extends Activity {
-	private PlanView guideMapView;
+	private FloorPlanView guideMapView;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		guideMapView = (PlanView) findViewById(R.id.guideMap);
+		guideMapView = (FloorPlanView) findViewById(R.id.guideMap);
 		
 		final ExhibitionHall exhibitionHall = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(AssetsUtils.getString(getBaseContext(), "booths.txt"), ExhibitionHall.class);
 		List<Area> areas = new ArrayList<Area>(exhibitionHall.getBooths().size()); 
