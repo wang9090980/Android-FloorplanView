@@ -233,7 +233,11 @@ public abstract class PathArea implements Area{
 			bubbleRect = new RectF();	
 			bubbleRect.left = getCoordinates()[0].x;
 			bubbleRect.top = getCoordinates()[0].y;
-			bubbleRect.left -= getBubbleXOffset() * getScale(context);	//再次根据气泡的X轴偏移量 便宜X坐标
+			if(getBubbleXOffset() > 0){
+				bubbleRect.left -= getBubbleXOffset() * getScale(context);	//再次根据气泡的X轴偏移量 便宜X坐标
+			}else{
+				bubbleRect.left -= Math.abs(getBubbleDrawable(context).getBounds().width()) - (Math.abs(getBubbleXOffset()) * getScale(context));	//再次根据气泡的X轴偏移量便移X坐标
+			}
 			bubbleRect.top -= getBubbleDrawable(context).getBounds().height();	//再次根据气泡的高度便宜Y坐标
 			bubbleRect.right = bubbleRect.left + getBubbleDrawable(context).getBounds().width();
 			bubbleRect.bottom = bubbleRect.top + getBubbleDrawable(context).getBounds().height();
