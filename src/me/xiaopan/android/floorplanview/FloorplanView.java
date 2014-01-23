@@ -146,13 +146,13 @@ public class FloorplanView extends View implements SimpleGestureListener{
 		initFinsish = false;
 	}
 	
-	private void initFinish(BitmapDrawable mapBitmapDrawable, List<Area> areas){
-		if(mapBitmapDrawable != null && areas != null && areas.size() > 0){
-			this.areas = areas;
+	private void initFinish(BitmapDrawable mapBitmapDrawable, List<Area> newAreas){
+		if(mapBitmapDrawable != null){
 			drawable = mapBitmapDrawable;
 			drawMatrix = new Matrix();
 			simpleGestureDetector = new SimpleGestureDetector(FloorplanView.this, FloorplanView.this);
 			simpleGestureDetector.getScaleContorller().init();
+			areas = newAreas;
 			invalidate();
 			initFinsish = true;
 			if(waitLocationArea != null){
@@ -171,7 +171,7 @@ public class FloorplanView extends View implements SimpleGestureListener{
 	 */
 	public void setMap(final Bitmap baseMapBitmap, final List<Area> newAreas, final int suggestMapWidth, final int suggestMapHeight) {
 		initStart();
-		if(baseMapBitmap != null && newAreas != null && newAreas.size() > 0){
+		if(baseMapBitmap != null && !baseMapBitmap.isRecycled()){
 			new AsyncTask<Integer, Integer, BitmapDrawable>() {
 				@Override
 				protected void onPreExecute() {
@@ -201,13 +201,15 @@ public class FloorplanView extends View implements SimpleGestureListener{
 					}
 					
 					/* 在底图上绘制区域 */
-					Canvas canvas = new Canvas(mapBitmap);
-					Paint rectPaint = new Paint();
-					int w = 0;
-					float scale = (float) mapBitmap.getWidth() / suggestMapWidth;
-					for(Area area : newAreas){
-						area.drawArea(canvas, rectPaint, scale);
-						onProgressUpdate(Integer.valueOf(RequiredUtils.percent(++w, newAreas.size(), 0, false, true)));
+					if(newAreas != null && newAreas.size() > 0){
+						Canvas canvas = new Canvas(mapBitmap);
+						Paint rectPaint = new Paint();
+						int w = 0;
+						float scale = (float) mapBitmap.getWidth() / suggestMapWidth;
+						for(Area area : newAreas){
+							area.drawArea(canvas, rectPaint, scale);
+							onProgressUpdate(Integer.valueOf(RequiredUtils.percent(++w, newAreas.size(), 0, false, true)));
+						}
 					}
 					
 					/* 创建底图 */
@@ -237,6 +239,10 @@ public class FloorplanView extends View implements SimpleGestureListener{
 					}
 				}
 			}.execute(0);
+		}else{
+			if(listener != null){
+				listener.onInitFailure();
+			}
 		}
 	}
 	
@@ -256,7 +262,7 @@ public class FloorplanView extends View implements SimpleGestureListener{
 	 */
 	public void setMap(final String filePath, final List<Area> newAreas){
 		initStart();
-		if(RequiredUtils.isNotEmpty(filePath) && newAreas != null && newAreas.size() > 0){
+		if(RequiredUtils.isNotEmpty(filePath)){
 			new AsyncTask<Integer, Integer, BitmapDrawable>() {
 				@Override
 				protected void onPreExecute() {
@@ -293,13 +299,15 @@ public class FloorplanView extends View implements SimpleGestureListener{
 					int mapHeight = options.outHeight;
 					
 					/* 在底图上绘制区域 */
-					Canvas canvas = new Canvas(mapBitmap);
-					Paint rectPaint = new Paint();
-					int w = 0;
-					float scale = (float) mapBitmap.getWidth() / mapWidth;
-					for(Area area : newAreas){
-						area.drawArea(canvas, rectPaint, scale);
-						onProgressUpdate(Integer.valueOf(RequiredUtils.percent(++w, newAreas.size(), 0, false, true)));
+					if(newAreas != null && newAreas.size() > 0){
+						Canvas canvas = new Canvas(mapBitmap);
+						Paint rectPaint = new Paint();
+						int w = 0;
+						float scale = (float) mapBitmap.getWidth() / mapWidth;
+						for(Area area : newAreas){
+							area.drawArea(canvas, rectPaint, scale);
+							onProgressUpdate(Integer.valueOf(RequiredUtils.percent(++w, newAreas.size(), 0, false, true)));
+						}
 					}
 					
 					/* 创建底图 */
@@ -329,6 +337,10 @@ public class FloorplanView extends View implements SimpleGestureListener{
 					}
 				}
 			}.execute(0);
+		}else{
+			if(listener != null){
+				listener.onInitFailure();
+			}
 		}
 	}
 	
@@ -339,7 +351,7 @@ public class FloorplanView extends View implements SimpleGestureListener{
 	 */
 	public void setMapFromAssets(final String fileName, final List<Area> newAreas){
 		initStart();
-		if(RequiredUtils.isNotEmpty(fileName) && newAreas != null && newAreas.size() > 0){
+		if(RequiredUtils.isNotEmpty(fileName)){
 			new AsyncTask<Integer, Integer, BitmapDrawable>() {
 				@Override
 				protected void onPreExecute() {
@@ -376,13 +388,15 @@ public class FloorplanView extends View implements SimpleGestureListener{
 					int mapHeight = options.outHeight;
 					
 					/* 在底图上绘制区域 */
-					Canvas canvas = new Canvas(mapBitmap);
-					Paint rectPaint = new Paint();
-					int w = 0;
-					float scale = (float) mapBitmap.getWidth() / mapWidth;
-					for(Area area : newAreas){
-						area.drawArea(canvas, rectPaint, scale);
-						onProgressUpdate(Integer.valueOf(RequiredUtils.percent(++w, newAreas.size(), 0, false, true)));
+					if(newAreas != null && newAreas.size() > 0){
+						Canvas canvas = new Canvas(mapBitmap);
+						Paint rectPaint = new Paint();
+						int w = 0;
+						float scale = (float) mapBitmap.getWidth() / mapWidth;
+						for(Area area : newAreas){
+							area.drawArea(canvas, rectPaint, scale);
+							onProgressUpdate(Integer.valueOf(RequiredUtils.percent(++w, newAreas.size(), 0, false, true)));
+						}
 					}
 					
 					/* 创建底图 */
@@ -412,6 +426,10 @@ public class FloorplanView extends View implements SimpleGestureListener{
 					}
 				}
 			}.execute(0);
+		}else{
+			if(listener != null){
+				listener.onInitFailure();
+			}
 		}
 	}
 	
@@ -438,7 +456,9 @@ public class FloorplanView extends View implements SimpleGestureListener{
     public final RectF getDisplayRect() {
     	if (isAllow()) {
 			displayRect.set(drawable.getBounds());
-			drawMatrix.mapRect(displayRect);
+			if(drawMatrix != null){
+				drawMatrix.mapRect(displayRect);
+			}
 			if(textView != null){
 				textView.setText(displayRect.toString());
 			}
@@ -489,7 +509,7 @@ public class FloorplanView extends View implements SimpleGestureListener{
 	 * @return
 	 */
 	private Area findClickArea(MotionEvent e){
-		if(isAllow() && bubbleAreas != null || areas != null){
+		if(isAllow() && (bubbleAreas != null || areas != null)){
 			RectF rectF = getDisplayRect();
 			if(rectF != null){
 				float x = (e.getX()-rectF.left)/simpleGestureDetector.getScaleContorller().getCurrentScale();
@@ -784,7 +804,7 @@ public class FloorplanView extends View implements SimpleGestureListener{
 		public void onInitFinish();
 		
 		/**
-		 * 由于解码图片失败导致初始化失败
+		 * 由于解码图片失败或参数不合法导致初始化失败
 		 */
 		public void onInitFailure();
 		
