@@ -1,4 +1,4 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent">
-	<me.xiaopan.android.floorplanview.FloorPlanView android:layout_width="match_parent" android:layout_height="match_parent" android:id="@+id/guideMap"/>
+	<me.xiaopan.android.floorplanview.FloorplanView android:layout_width="match_parent" android:layout_height="match_parent" android:id="@+id/guideMap"/>
 	<TextView android:layout_width="match_parent" android:layout_gravity="bottom" android:gravity="center" android:layout_height="wrap_content" android:background="#88000000" android:textColor="#FFFFFFFF" android:id="@+id/text"/>
 </FrameLayout>

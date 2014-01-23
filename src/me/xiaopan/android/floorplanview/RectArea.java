@@ -143,6 +143,7 @@ public abstract class RectArea implements Area{
 	@Override
 	public void drawArea(Canvas canvas, Paint paint, float scale){
 		paint.setColor(getAreaColor());
+		paint.setAntiAlias(true);
 		RectF rect = new RectF(getAreaRect());
 		rect.left *= scale;
 		rect.top *= scale;
@@ -161,6 +162,7 @@ public abstract class RectArea implements Area{
 	public void drawPressed(Context context, Canvas canvas){
 		Paint paint = new Paint();
 		paint.setColor(getPressedColor());
+		paint.setAntiAlias(true);
 		
 		if(isShowBubble()){
 			if(!isClickedArea() && bubbleRect != null && bubbleDrawable != null){
@@ -238,7 +240,7 @@ public abstract class RectArea implements Area{
 	public Drawable getBubbleDrawable(Context context) {
 		if(bubbleDrawable == null){
 			Paint paint = new Paint();
-			paint.setAntiAlias(true);//去除锯齿
+			paint.setAntiAlias(true);//抗锯齿
 			paint.setFilterBitmap(true);//对文字进行滤波处理，增强绘制效果
 			
 			/* 测量标题需要的宽和高 */

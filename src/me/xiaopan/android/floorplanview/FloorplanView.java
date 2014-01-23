@@ -27,7 +27,7 @@ import android.widget.TextView;
 /**
  * 平面图
  */
-public class FloorPlanView extends View implements SimpleGestureListener{
+public class FloorplanView extends View implements SimpleGestureListener{
 	private RectF displayRect;
 	private Matrix drawMatrix;
 	private Listener listener;
@@ -43,17 +43,17 @@ public class FloorPlanView extends View implements SimpleGestureListener{
 	private boolean initFinsish;
 	private int maxSideLength;
 
-	public FloorPlanView(Context context) {
+	public FloorplanView(Context context) {
 		super(context);
 		init();
 	}
 
-	public FloorPlanView(Context context, AttributeSet attrs) {
+	public FloorplanView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init();
 	}
 
-	public FloorPlanView(Context context, AttributeSet attrs, int defStyle) {
+	public FloorplanView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		init();
 	}
@@ -120,7 +120,7 @@ public class FloorPlanView extends View implements SimpleGestureListener{
 		}
 	}
 	
-	private void setInitStart(){
+	private void initStart(){
 		if(drawable != null){
 			if(drawable.getBitmap() != null && !drawable.getBitmap().isRecycled()){
 				drawable.getBitmap().recycle();
@@ -146,17 +146,14 @@ public class FloorPlanView extends View implements SimpleGestureListener{
 		initFinsish = false;
 	}
 	
-	private void setInitFinish(BitmapDrawable mapBitmapDrawable, List<Area> areas){
+	private void initFinish(BitmapDrawable mapBitmapDrawable, List<Area> areas){
 		if(mapBitmapDrawable != null && areas != null && areas.size() > 0){
 			this.areas = areas;
 			drawable = mapBitmapDrawable;
 			drawMatrix = new Matrix();
-			simpleGestureDetector = new SimpleGestureDetector(FloorPlanView.this, FloorPlanView.this);
+			simpleGestureDetector = new SimpleGestureDetector(FloorplanView.this, FloorplanView.this);
 			simpleGestureDetector.getScaleContorller().init();
 			invalidate();
-			if(listener != null){
-				listener.onInitFinish();
-			}
 			initFinsish = true;
 			if(waitLocationArea != null){
 				location(waitLocationArea);
@@ -173,7 +170,7 @@ public class FloorPlanView extends View implements SimpleGestureListener{
 	 * @param suggestMapHeight 地图的高，如果该值小于0将使用mapBitmap.getHeight()代替
 	 */
 	public void setMap(final Bitmap baseMapBitmap, final List<Area> newAreas, final int suggestMapWidth, final int suggestMapHeight) {
-		setInitStart();
+		initStart();
 		if(baseMapBitmap != null && newAreas != null && newAreas.size() > 0){
 			new AsyncTask<Integer, Integer, BitmapDrawable>() {
 				@Override
@@ -228,7 +225,16 @@ public class FloorPlanView extends View implements SimpleGestureListener{
 
 				@Override
 				protected void onPostExecute(BitmapDrawable result) {
-					setInitFinish(result, newAreas);
+					if(result != null){
+						initFinish(result, newAreas);
+						if(listener != null){
+							listener.onInitFinish();
+						}
+					}else{
+						if(listener != null){
+							listener.onInitFailure();
+						}
+					}
 				}
 			}.execute(0);
 		}
@@ -249,7 +255,7 @@ public class FloorPlanView extends View implements SimpleGestureListener{
 	 * @param newAreas 地图上的区域
 	 */
 	public void setMap(final String filePath, final List<Area> newAreas){
-		setInitStart();
+		initStart();
 		if(RequiredUtils.isNotEmpty(filePath) && newAreas != null && newAreas.size() > 0){
 			new AsyncTask<Integer, Integer, BitmapDrawable>() {
 				@Override
@@ -264,6 +270,9 @@ public class FloorPlanView extends View implements SimpleGestureListener{
 				protected BitmapDrawable doInBackground(Integer... params) {
 					/* 限制底图的最大边长并创建底图副本 */
 					Bitmap mapBitmap = new BitmapDecoder((int) (Runtime.getRuntime().maxMemory()/4/4)).decodeFile(filePath);
+					if(mapBitmap == null){
+						return null;
+					}
 					if(mapBitmap.getWidth() > maxSideLength){
 						Bitmap tempBitmap = RequiredUtils.scaleByWidth(mapBitmap, maxSideLength);
 						mapBitmap.recycle();
@@ -308,7 +317,16 @@ public class FloorPlanView extends View implements SimpleGestureListener{
 
 				@Override
 				protected void onPostExecute(BitmapDrawable result) {
-					setInitFinish(result, newAreas);
+					if(result != null){
+						initFinish(result, newAreas);
+						if(listener != null){
+							listener.onInitFinish();
+						}
+					}else{
+						if(listener != null){
+							listener.onInitFailure();
+						}
+					}
 				}
 			}.execute(0);
 		}
@@ -320,7 +338,7 @@ public class FloorPlanView extends View implements SimpleGestureListener{
 	 * @param newAreas 地图上的区域
 	 */
 	public void setMapFromAssets(final String fileName, final List<Area> newAreas){
-		setInitStart();
+		initStart();
 		if(RequiredUtils.isNotEmpty(fileName) && newAreas != null && newAreas.size() > 0){
 			new AsyncTask<Integer, Integer, BitmapDrawable>() {
 				@Override
@@ -335,6 +353,9 @@ public class FloorPlanView extends View implements SimpleGestureListener{
 				protected BitmapDrawable doInBackground(Integer... params) {
 					/* 限制底图的最大边长并创建底图副本 */
 					Bitmap mapBitmap = new BitmapDecoder((int) (Runtime.getRuntime().maxMemory()/4/4)).decodeFromAssets(getContext(), fileName);
+					if(mapBitmap == null){
+						return null;
+					}
 					if(mapBitmap.getWidth() > maxSideLength){
 						Bitmap tempBitmap = RequiredUtils.scaleByWidth(mapBitmap, maxSideLength);
 						mapBitmap.recycle();
@@ -379,7 +400,16 @@ public class FloorPlanView extends View implements SimpleGestureListener{
 
 				@Override
 				protected void onPostExecute(BitmapDrawable result) {
-					setInitFinish(result, newAreas);
+					if(result != null){
+						initFinish(result, newAreas);
+						if(listener != null){
+							listener.onInitFinish();
+						}
+					}else{
+						if(listener != null){
+							listener.onInitFailure();
+						}
+					}
 				}
 			}.execute(0);
 		}
@@ -752,6 +782,11 @@ public class FloorPlanView extends View implements SimpleGestureListener{
 		 * 初始化完成
 		 */
 		public void onInitFinish();
+		
+		/**
+		 * 由于解码图片失败导致初始化失败
+		 */
+		public void onInitFailure();
 		
 		/**
 		 * 点击了某一个区域

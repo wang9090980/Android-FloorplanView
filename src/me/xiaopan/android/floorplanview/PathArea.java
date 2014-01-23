@@ -152,6 +152,7 @@ public abstract class PathArea implements Area{
 				path.lineTo(coordinates[w].x * scale, coordinates[w].y * scale);
 			}
 			path.close();
+			paint.setAntiAlias(true);
 			paint.setColor(getAreaColor());
 			canvas.drawPath(path, paint);
 		}
@@ -166,6 +167,7 @@ public abstract class PathArea implements Area{
 	@Override
 	public void drawPressed(Context context, Canvas canvas) {
 		Paint paint = new Paint();
+		paint.setAntiAlias(true);
 		paint.setColor(getPressedColor());
 		
 		if(isShowBubble()){
@@ -243,7 +245,7 @@ public abstract class PathArea implements Area{
 	public Drawable getBubbleDrawable(Context context) {
 		if(bubbleDrawable == null){
 			Paint paint = new Paint();
-			paint.setAntiAlias(true);//去除锯齿
+			paint.setAntiAlias(true);//抗锯齿
 			paint.setFilterBitmap(true);//对文字进行滤波处理，增强绘制效果
 			
 			/* 测量标题需要的宽和高 */

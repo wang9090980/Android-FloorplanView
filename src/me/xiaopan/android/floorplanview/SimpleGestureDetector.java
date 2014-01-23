@@ -27,13 +27,13 @@ import android.view.MotionEvent;
 public class SimpleGestureDetector extends SimpleOnGestureListener{
 	public static final int ZOOM_DURATION = 200;
 	public static final int SIXTY_FPS_INTERVAL = 1000 / 60;
-	private FloorPlanView guideView;
+	private FloorplanView guideView;
 	private ScaleContorller scaleContorller;
 	private GestureDetector generalGestureDetector;
 	private FlingScrollRunnable flingScrollRunnable;
 	private SimpleGestureListener simpleGestureListener;
 	
-	public SimpleGestureDetector(FloorPlanView guideView, SimpleGestureListener simpleGestureListener){
+	public SimpleGestureDetector(FloorplanView guideView, SimpleGestureListener simpleGestureListener){
 		this.guideView = guideView;
 		this.simpleGestureListener = simpleGestureListener;
 		generalGestureDetector = new GestureDetector(guideView.getContext(), this);
@@ -204,7 +204,7 @@ public class SimpleGestureDetector extends SimpleOnGestureListener{
 		return scaleContorller;
 	}
 
-	public FloorPlanView getGuideView() {
+	public FloorplanView getGuideView() {
 		return guideView;
 	}
 }

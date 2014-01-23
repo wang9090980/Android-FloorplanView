@@ -6,8 +6,8 @@ import java.util.List;
 import me.xiaopan.android.easy.util.AssetsUtils;
 import me.xiaopan.android.easy.util.ToastUtils;
 import me.xiaopan.android.floorplanview.Area;
-import me.xiaopan.android.floorplanview.FloorPlanView;
-import me.xiaopan.android.floorplanview.FloorPlanView.Listener;
+import me.xiaopan.android.floorplanview.FloorplanView;
+import me.xiaopan.android.floorplanview.FloorplanView.Listener;
 import me.xiaopan.android.floorplanview.R;
 import android.app.Activity;
 import android.os.Bundle;
@@ -16,13 +16,13 @@ import android.widget.TextView;
 import com.google.gson.GsonBuilder;
 
 public class MainActivity extends Activity {
-	private FloorPlanView guideMapView;
+	private FloorplanView guideMapView;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		guideMapView = (FloorPlanView) findViewById(R.id.guideMap);
+		guideMapView = (FloorplanView) findViewById(R.id.guideMap);
 		
 		final ExhibitionHall exhibitionHall = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().fromJson(AssetsUtils.getString(getBaseContext(), "booths.txt"), ExhibitionHall.class);
 		List<Area> areas = new ArrayList<Area>(exhibitionHall.getBooths().size()); 
@@ -59,6 +59,11 @@ public class MainActivity extends Activity {
 			@Override
 			public void onInitFinish() {
 //				AndroidLogger.e("初始化完成");
+			}
+
+			@Override
+			public void onInitFailure() {
+				
 			}
 		});
 		guideMapView.location(areas.get(10));
