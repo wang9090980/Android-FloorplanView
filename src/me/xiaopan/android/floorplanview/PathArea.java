@@ -187,10 +187,10 @@ public abstract class PathArea implements Area{
 		paint.setColor(getPressedColor());
 		
 		if(isShowBubble()){
-			if(!isClickedArea() && bubbleRect != null && bubbleDrawable != null){
-				canvas.translate(bubbleRect.left, bubbleRect.top);
-				canvas.drawRect(0, 0, bubbleDrawable.getBounds().width(), bubbleDrawable.getBounds().height() - (getVoidHeight() * getScale(context)), paint);
-			}
+//			if(!isClickedArea() && bubbleRect != null && bubbleDrawable != null){
+//				canvas.translate(bubbleRect.left, bubbleRect.top);
+//				canvas.drawRect(0, 0, bubbleDrawable.getBounds().width(), bubbleDrawable.getBounds().height() - (getVoidHeight() * getScale(context)), paint);
+//			}
 		}else{
 			PointF[] coordinates = getCoordinates();
 			if(coordinates != null && coordinates.length >= 3){

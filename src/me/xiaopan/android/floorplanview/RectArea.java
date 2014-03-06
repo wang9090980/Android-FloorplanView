@@ -181,10 +181,10 @@ public abstract class RectArea implements Area{
 		paint.setAntiAlias(true);
 		
 		if(isShowBubble()){
-			if(!isClickedArea() && bubbleRect != null && bubbleDrawable != null){
-				canvas.translate(bubbleRect.left, bubbleRect.top);
-				canvas.drawRect(0, 0, bubbleDrawable.getBounds().width(), bubbleDrawable.getBounds().height() - (getVoidHeight() * getScale(context)), paint);
-			}
+//			if(!isClickedArea() && bubbleRect != null && bubbleDrawable != null){
+//				canvas.translate(bubbleRect.left, bubbleRect.top);
+//				canvas.drawRect(0, 0, bubbleDrawable.getBounds().width(), bubbleDrawable.getBounds().height() - (getVoidHeight() * getScale(context)), paint);
+//			}
 		}else{
 			canvas.drawRect(getAreaRect(), paint);
 		}

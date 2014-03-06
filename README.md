@@ -62,9 +62,9 @@ floorplanView.setListener(new Listener() {
 >* FloorplanView.setMapFromAssets(final String fileName, final List<Area> newAreas)
 
 ##Downloads
-**[android-floorplan-view-1.2.2.jar](https://github.com/xiaopansky/Android-FloorplanView/raw/master/releases/android-floorplan-view-1.2.2)**
+**[android-floorplan-view-1.2.3.jar](https://github.com/xiaopansky/Android-FloorplanView/raw/master/releases/android-floorplan-view-1.2.3)**
 
-**[android-floorplan-view-1.2.2-with-src.jar](https://github.com/xiaopansky/Android-FloorplanView/raw/master/releases/android-floorplan-view-1.2.2-with-src.jar)**
+**[android-floorplan-view-1.2.3-with-src.jar](https://github.com/xiaopansky/Android-FloorplanView/raw/master/releases/android-floorplan-view-1.2.3-with-src.jar)**
 
 ##License
 ```java
