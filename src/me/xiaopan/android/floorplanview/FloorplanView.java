@@ -530,7 +530,8 @@ public class FloorplanView extends View implements SimpleGestureListener{
 			if(rectF != null){
 				float x = (e.getX()-rectF.left)/simpleGestureDetector.getScaleContorller().getCurrentScale();
 				float y = (e.getY()-rectF.top)/simpleGestureDetector.getScaleContorller().getCurrentScale();
-				
+				x += offsetRect.left / simpleGestureDetector.getScaleContorller().getCurrentScale();
+				y += offsetRect.top / simpleGestureDetector.getScaleContorller().getCurrentScale();
 				Area clickArea = null;
 				if(bubbleAreas != null && bubbleAreas.size() > 0){
 					for(Area area : bubbleAreas){

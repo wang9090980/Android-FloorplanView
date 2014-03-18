@@ -62,9 +62,13 @@ floorplanView.setListener(new Listener() {
 >* FloorplanView.setMapFromAssets(final String fileName, final List<Area> newAreas)
 
 ##Downloads
-**[android-floorplan-view-1.2.3.jar](https://github.com/xiaopansky/Android-FloorplanView/raw/master/releases/android-floorplan-view-1.2.3)**
+**[android-floorplan-view-1.2.4.jar](https://github.com/xiaopansky/Android-FloorplanView/raw/master/releases/android-floorplan-view-1.2.4)**
 
-**[android-floorplan-view-1.2.3-with-src.jar](https://github.com/xiaopansky/Android-FloorplanView/raw/master/releases/android-floorplan-view-1.2.3-with-src.jar)**
+**[android-floorplan-view-1.2.4-with-src.jar](https://github.com/xiaopansky/Android-FloorplanView/raw/master/releases/android-floorplan-view-1.2.4-with-src.jar)**
+
+## Change Log
+###1.2.4
+>* 修复当左边和右边显示气泡超出底图后点击位置偏移的BUG
 
 ##License
 ```java
