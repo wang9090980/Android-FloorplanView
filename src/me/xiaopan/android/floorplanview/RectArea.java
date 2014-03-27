@@ -170,8 +170,10 @@ public abstract class RectArea implements Area{
 
 	@Override
 	public void drawBubble(Context context, Canvas canvas) {
+		canvas.save();
 		canvas.translate(getBubbleRect(context).left, getBubbleRect(context).top);
 		getBubbleDrawable(context).draw(canvas);
+		canvas.restore();
 	}
 	
 	@Override
@@ -181,10 +183,12 @@ public abstract class RectArea implements Area{
 		paint.setAntiAlias(true);
 		
 		if(isShowBubble()){
-//			if(!isClickedArea() && bubbleRect != null && bubbleDrawable != null){
-//				canvas.translate(bubbleRect.left, bubbleRect.top);
-//				canvas.drawRect(0, 0, bubbleDrawable.getBounds().width(), bubbleDrawable.getBounds().height() - (getVoidHeight() * getScale(context)), paint);
-//			}
+			if(!isClickedArea() && bubbleRect != null && bubbleDrawable != null){
+				canvas.save();
+				canvas.translate(bubbleRect.left, bubbleRect.top);
+				canvas.drawRect(0, 0, bubbleDrawable.getBounds().width(), bubbleDrawable.getBounds().height() - (getVoidHeight() * getScale(context)), paint);
+				canvas.restore();
+			}
 		}else{
 			canvas.drawRect(getAreaRect(), paint);
 		}
